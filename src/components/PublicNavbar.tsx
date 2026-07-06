@@ -28,7 +28,7 @@ export default function PublicNavbar() {
   return (
     <nav className="bg-white border-b p-4 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="text-xl font-bold text-gray-900">SparqHub</div>
+        <div className="text-xl font-bold text-ink">SparqHub</div>
 
         {status === 'loading' ? (
           <LoadingSpinner size="small" />
@@ -36,7 +36,7 @@ export default function PublicNavbar() {
           <ul className="flex items-center space-x-6">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
-                <Link href={href} className="text-gray-800 hover:text-blue-500">
+                <Link href={href} className="text-ink hover:text-blue-500">
                   {label}
                 </Link>
               </li>
@@ -47,7 +47,7 @@ export default function PublicNavbar() {
                 <li key={index}>{item.component}</li>
               ) : (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-gray-800 hover:text-blue-500">
+                  <Link href={item.href} className="text-ink hover:text-blue-500">
                     {item.label}
                   </Link>
                 </li>

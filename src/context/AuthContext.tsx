@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import api from '@/lib/axios'
 
-type User = { id: number; username: string }
+type User = { id: number; username: string; credits_remaining: number; profile_picture: string | null; is_staff: boolean }
 type Status = 'loading'|'authenticated'|'unauthenticated'
 
 interface AuthContextType {
@@ -13,6 +13,7 @@ interface AuthContextType {
   status: Status
   login: (u: string, p: string) => Promise<void>
   logout: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -39,6 +40,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { void init() }, [])
 
+  // refresh the current user (e.g. to reflect credits_remaining after a chat turn)
+  async function refreshUser() {
+    try {
+      const { data } = await api.get<{ user: User }>('/api/auth/me/')
+      setUser(data.user)
+    } catch {
+      // ignore — a failed refresh shouldn't disrupt the current session state
+    }
+  }
+
   // 2) login
   async function login(username: string, password: string) {
     setStatus('loading')
@@ -56,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, status, login, logout }}>
+    <AuthContext.Provider value={{ user, status, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

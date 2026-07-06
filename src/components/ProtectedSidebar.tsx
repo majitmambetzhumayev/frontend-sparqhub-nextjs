@@ -4,23 +4,31 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import LogoutButton from './LogoutButton';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Assistant Manager', href: '/assistant-manager' },
-  { label: 'Quick Chat', href: '/quickchat' },
+  { label: 'Conversations', href: '/conversations' },
+  { label: 'Projects', href: '/projects' },
   { label: 'Settings', href: '/settings' },
+];
+
+const adminNavItems = [
+  { label: 'Users', href: '/users' },
 ];
 
 export default function ProtectedSidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const items = user?.is_staff ? [...navItems, ...adminNavItems] : navItems;
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-64 shrink-0 h-full bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
       <div className="p-6 text-xl font-bold">SparqHub</div>
       <nav className="flex-1 space-y-1">
-        {navItems.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.href}
             href={item.href}
