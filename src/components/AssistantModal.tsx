@@ -1,8 +1,10 @@
 // src/components/AssistantModal.tsx
 'use client';
 
-import React, { FC, useState, useEffect } from 'react';
-import type { Assistant } from '@/types/assistant';
+import React, { FC, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/axios';
+import type { Assistant, ProvidersResponse } from '@/types/assistant';
 
 export interface AssistantModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ export interface AssistantModalProps {
     name: string;
     instructions: string;
     model: string;
+    ai_provider: string;
   }) => void;
   onClose: () => void;
 }
@@ -26,21 +29,41 @@ const AssistantModal: FC<AssistantModalProps> = ({
 }) => {
   const [name, setName] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
-  const [model, setModel] = useState<string>('gpt-4o');
+  const [aiProvider, setAiProvider] = useState<string>('');
+  const [model, setModel] = useState<string>('');
+
+  const { data: providers } = useQuery<ProvidersResponse, Error>({
+    queryKey: ['providers'],
+    queryFn: () => api.get<ProvidersResponse>('/api/providers/').then((r) => r.data),
+    staleTime: 60_000,
+  });
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (assistant) {
       setName(assistant.name);
       setInstructions(assistant.instructions ?? '');
+      setAiProvider(assistant.ai_provider);
       setModel(assistant.model);
-    } else {
-      setName('');
-      setInstructions('');
-      setModel('gpt-4o');
+      return;
     }
-  }, [assistant, isOpen]);
+
+    setName('');
+    setInstructions('');
+    const firstProvider = providers ? Object.keys(providers)[0] : '';
+    setAiProvider(firstProvider);
+    setModel(firstProvider ? providers![firstProvider].models[0]?.id ?? '' : '');
+  }, [assistant, isOpen, providers]);
+
+  const onProviderChange = (nextProvider: string) => {
+    setAiProvider(nextProvider);
+    setModel(providers?.[nextProvider]?.models[0]?.id ?? '');
+  };
 
   if (!isOpen) return null;
+
+  const availableModels = providers?.[aiProvider]?.models ?? [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -73,15 +96,36 @@ const AssistantModal: FC<AssistantModalProps> = ({
           </div>
 
           <div>
+            <label className="block mb-1 font-medium">Provider</label>
+            <select
+              value={aiProvider}
+              onChange={(e) => onProviderChange(e.target.value)}
+              disabled={isSubmitting || !providers}
+              className="w-full border rounded px-3 py-2"
+            >
+              {providers &&
+                Object.entries(providers).map(([key, info]) => (
+                  <option key={key} value={key}>
+                    {info.label}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
             <label className="block mb-1 font-medium">Model</label>
-            <input
-              type="text"
+            <select
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              required
-              disabled={isSubmitting}
+              disabled={isSubmitting || availableModels.length === 0}
               className="w-full border rounded px-3 py-2"
-            />
+            >
+              {availableModels.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -101,10 +145,11 @@ const AssistantModal: FC<AssistantModalProps> = ({
                 id: assistant?.id,
                 name: name.trim(),
                 instructions: instructions.trim(),
-                model: model.trim(),
+                model,
+                ai_provider: aiProvider,
               })
             }
-            disabled={isSubmitting || !name.trim()}
+            disabled={isSubmitting || !name.trim() || !model || !aiProvider}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
           >
             {isSubmitting ? 'Saving…' : 'Save'}
