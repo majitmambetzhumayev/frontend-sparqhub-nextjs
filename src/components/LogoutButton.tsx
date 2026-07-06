@@ -28,7 +28,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+      className="px-4 py-2 border border-gray-200 text-ink rounded hover:bg-gray-100 transition-colors"
       type="button"
     >
       Logout
