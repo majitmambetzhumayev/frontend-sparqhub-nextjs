@@ -1,18 +1,20 @@
 // src/components/ClientProviders.tsx
-'use client'
+'use client';
 
-import React from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthProvider } from '@/context/AuthContext'
+import React from 'react';
+import RootQueryProvider from '@/components/RootQueryProvider';
+import { AuthProvider } from '@/context/AuthContext';
 
-const queryClient = new QueryClient()
+interface ClientProvidersProps {
+  children: React.ReactNode;
+}
 
-export default function ClientProviders({
-  children,
-}: { children: React.ReactNode }) {
+export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
-    </QueryClientProvider>
-  )
+    <RootQueryProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </RootQueryProvider>
+  );
 }

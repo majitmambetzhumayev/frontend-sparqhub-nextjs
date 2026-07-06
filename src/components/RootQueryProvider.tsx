@@ -1,29 +1,15 @@
-// src/components/ClientProviders.tsx
-'use client';
+// src/components/RootQueryProvider.tsx
+'use client'
 
-import React, { useEffect } from 'react';
-import RootQueryProvider from '@/components/RootQueryProvider';
-import { AuthProvider } from '@/context/AuthContext';
-import api from '@/lib/axios';
+import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-interface ClientProvidersProps {
-  children: React.ReactNode;
-}
+const queryClient = new QueryClient()
 
-export default function ClientProviders({ children }: ClientProvidersProps) {
-  // One-time CSRF cookie fetch so that Axios (withCredentials + xsrfCookieName/HeaderName)
-  // can automatically include X-CSRFToken on all mutating requests.
-  useEffect(() => {
-    api.get('/api/csrf/').catch(() => {
-      // If it fails (e.g. already fetched), we can safely ignore
-    });
-  }, []);
-
+export default function RootQueryProvider({
+  children,
+}: { children: React.ReactNode }) {
   return (
-    <RootQueryProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </RootQueryProvider>
-  );
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
 }
