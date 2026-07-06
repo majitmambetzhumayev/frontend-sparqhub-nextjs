@@ -1,7 +1,7 @@
 // src/app/[locale]/(app)/users/page.tsx
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
@@ -50,12 +50,21 @@ export default function UsersAdminPage() {
     [creditsDraft, updateCredits],
   );
 
+  // Redirecting must happen in an effect, not during render — calling
+  // router.replace() directly in the component body updates router state
+  // while React is still mid-render, which React's render-purity rules warn
+  // against and can cause the navigation to be dropped on that pass.
+  useEffect(() => {
+    if (status === 'authenticated' && !user?.is_staff) {
+      router.replace('/dashboard');
+    }
+  }, [status, user, router]);
+
   if (status === 'loading' || (status === 'authenticated' && !user)) {
     return <p className="p-6 text-gray-500">Loading…</p>;
   }
 
   if (!user?.is_staff) {
-    router.replace('/dashboard');
     return null;
   }
 

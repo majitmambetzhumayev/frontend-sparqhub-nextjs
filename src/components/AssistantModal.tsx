@@ -38,19 +38,32 @@ const AssistantModal: FC<AssistantModalProps> = ({
     staleTime: 60_000,
   });
 
+  // Keyed only on [assistant, isOpen] — must not reset user-entered text when
+  // the `providers` query resolves late (e.g. cold cache, slow connection)
+  // after the user already started typing in a "New Assistant" modal.
   useEffect(() => {
     if (!isOpen) return;
 
     if (assistant) {
       setName(assistant.name);
       setInstructions(assistant.instructions ?? '');
+    } else {
+      setName('');
+      setInstructions('');
+    }
+  }, [assistant, isOpen]);
+
+  // Separate effect for provider/model defaults, which do depend on
+  // `providers` having loaded.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (assistant) {
       setAiProvider(assistant.ai_provider);
       setModel(assistant.model);
       return;
     }
 
-    setName('');
-    setInstructions('');
     const firstProvider = providers ? Object.keys(providers)[0] : '';
     setAiProvider(firstProvider);
     setModel(firstProvider ? providers![firstProvider].models[0]?.id ?? '' : '');
