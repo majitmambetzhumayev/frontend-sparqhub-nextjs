@@ -1,8 +1,8 @@
 // src/app/[locale]/error.tsx
 'use client';
 
-import { useEffect } from 'react';
 import ErrorFallback from '@/components/ErrorFallback';
+import { useReportError } from '@/lib/useReportError';
 
 export default function LocaleError({
   error,
@@ -11,9 +11,7 @@ export default function LocaleError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
+  useReportError(error);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
