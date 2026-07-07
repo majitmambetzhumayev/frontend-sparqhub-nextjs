@@ -1,17 +1,22 @@
 // src/app/global-error.tsx
 'use client';
 
+import { useReportError } from '@/lib/useReportError';
+
 // Catches errors thrown by the root layout itself (or anything not already
 // caught by a more specific nested error.tsx). Next.js requires this file to
 // render its own <html>/<body> since it replaces the root layout entirely —
 // it can't rely on globals.css or Tailwind classes being available, so it
 // uses inline styles.
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useReportError(error);
+
   return (
     <html>
       <body

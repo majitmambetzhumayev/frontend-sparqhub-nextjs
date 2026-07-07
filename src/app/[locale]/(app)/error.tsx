@@ -1,8 +1,8 @@
 // src/app/[locale]/(app)/error.tsx
 'use client';
 
-import { useEffect } from 'react';
 import ErrorFallback from '@/components/ErrorFallback';
+import { useReportError } from '@/lib/useReportError';
 
 // Sibling to (app)/layout.tsx, so the sidebar/topbar keep rendering around
 // this fallback — only the page content area is replaced.
@@ -13,9 +13,7 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
+  useReportError(error);
 
   return (
     <div className="flex-1 flex items-center justify-center p-6">
