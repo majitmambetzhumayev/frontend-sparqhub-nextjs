@@ -53,9 +53,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 2) login
   async function login(username: string, password: string) {
     setStatus('loading')
-    await api.post('/api/auth/login/', { username, password })
+    try {
+      await api.post('/api/auth/login/', { username, password })
+    } catch (err) {
+      // Otherwise a failed attempt leaves status stuck on 'loading' forever
+      // — nothing ever resets it since init() is only called on mount.
+      setStatus('unauthenticated')
+      throw err
+    }
     await init()
     router.push(`/${locale}/dashboard`)
+    // See logout()'s comment — same Router Cache staleness risk applies to
+    // the protected route we're about to land on.
+    router.refresh()
   }
 
   // 3) logout
@@ -64,6 +74,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
     setStatus('unauthenticated')
     router.replace(`/${locale}/auth/login`)
+    // Protected routes (e.g. (app)/layout.tsx) decide access via a
+    // server-side cookie check. Without this, the Router Cache can still
+    // serve an already-rendered protected page from before logout on a
+    // subsequent soft navigation, since Next has no way to know the cookie
+    // just changed.
+    router.refresh()
   }
 
   return (
