@@ -6,13 +6,14 @@ import { routing } from '@/i18n/routing'
 
 export const dynamic = 'force-dynamic'
 
-// Extract the literal union type "en" | "fr" from your routing config
-type Locale = typeof routing.locales[number]
-
 interface LocaleLayoutProps {
   children: ReactNode
-  // Now params.locale is typed as Locale, not string
-  params: Promise<{ locale: Locale }>
+  // Next.js's own generated route types infer `string` for the `[locale]`
+  // dynamic segment — narrowing this to the literal locale union here
+  // conflicts with that inferred type. hasLocale() below acts as a type
+  // guard, narrowing `locale` to the literal union for the rest of this
+  // function without needing to narrow the prop type itself.
+  params: Promise<{ locale: string }>
 }
 
 export default async function LocaleLayout({
@@ -22,7 +23,6 @@ export default async function LocaleLayout({
   // Await the params promise per Next.js 15+
   const { locale } = await params
 
-  // TypeScript now knows locale is either "en" or "fr"
   if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
