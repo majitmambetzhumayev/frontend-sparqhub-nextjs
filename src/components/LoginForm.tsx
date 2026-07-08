@@ -1,18 +1,18 @@
 'use client';
 
 import React, { useState, FormEvent, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
+import { useAuth } from '@/context/AuthContext';
 import OAuthButtons from './OAuthButtons';
 
 type LoginFormProps = object;
 
 export default function LoginForm({}: LoginFormProps) {
-  const router = useRouter();
   const { locale } = useParams() as { locale: string };
+  const { login } = useAuth();
   const t = useTranslations('auth');
 
   const [username, setUsername] = useState('');
@@ -27,9 +27,9 @@ export default function LoginForm({}: LoginFormProps) {
       setLoading(true);
 
       try {
-        await api.post('/api/auth/login/', { username, password });
-        // Après login réussi, redirige vers le dashboard
-        router.push(`/${locale}/dashboard`);
+        // login() owns the whole flow: the POST, syncing AuthContext's
+        // user/status, and the redirect + cache refresh.
+        await login(username, password);
       } catch (err: unknown) {
         if (isAxiosError(err) && err.response?.status === 403) {
           // Login is gated on email confirmation — surfaced distinctly
@@ -48,7 +48,7 @@ export default function LoginForm({}: LoginFormProps) {
         setLoading(false);
       }
     },
-    [username, password, locale, router, t]
+    [username, password, login, t]
   );
 
   return (
