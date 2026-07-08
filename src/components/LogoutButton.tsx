@@ -2,23 +2,16 @@
 'use client';
 
 import React from 'react';
-import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import api from '@/lib/axios';
 
 export default function LogoutButton() {
-  const router = useRouter();
-  const { locale } = useParams() as { locale: string };
   const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      // 1. Invalidate server-side tokens / cookies
-      await api.post('/api/auth/logout/');
-      // 2. Clear client-side auth state
+      // logout() already calls POST /api/auth/logout/, clears user/status,
+      // and redirects to the login page — it owns the whole flow.
       await logout();
-      // 3. Redirect to localized home or login page
-      router.replace(`/${locale}/`);
     } catch (error) {
       console.error('Logout failed', error);
       // Optionally show a toast or error state here
