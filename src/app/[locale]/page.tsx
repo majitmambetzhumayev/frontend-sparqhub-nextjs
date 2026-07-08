@@ -33,7 +33,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
       <div className="mt-4 space-x-4">
         <Link
-          href={`/${locale}/dashboard`}
+          href="/dashboard"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           {locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
