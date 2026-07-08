@@ -30,8 +30,11 @@ export default function LoginForm({}: LoginFormProps) {
         // Après login réussi, redirige vers le dashboard
         router.push(`/${locale}/dashboard`);
       } catch (err: unknown) {
-        // On vérifie si c’est une erreur Axios et qu’elle contient un message 'detail'
-        if (
+        if (isAxiosError(err) && err.response?.status === 403) {
+          // Login is gated on email confirmation — surfaced distinctly
+          // from invalid-credentials so the user knows to check their inbox.
+          setError(t('login.emailNotVerified'));
+        } else if (
           isAxiosError(err) &&
           err.response?.data != null &&
           typeof err.response.data.detail === 'string'
@@ -44,7 +47,7 @@ export default function LoginForm({}: LoginFormProps) {
         setLoading(false);
       }
     },
-    [username, password, locale, router]
+    [username, password, locale, router, t]
   );
 
   return (

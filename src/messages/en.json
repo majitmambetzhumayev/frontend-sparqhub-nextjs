@@ -24,6 +24,21 @@
       "passwordTooShort": "Password must be at least 8 characters.",
       "invalidOrExpired": "This reset link is invalid or has expired.",
       "missingParams": "This reset link is invalid."
+    },
+    "register": {
+      "checkEmailTitle": "Check your email",
+      "checkEmailMessage": "We've sent a confirmation link to your email address. Please click it to activate your account before logging in."
+    },
+    "confirmEmail": {
+      "title": "Confirm your email",
+      "confirming": "Confirming…",
+      "successMessage": "Your email has been confirmed. You can now log in.",
+      "invalidOrExpired": "This confirmation link is invalid or has expired.",
+      "missingParams": "This confirmation link is invalid.",
+      "goToLogin": "Go to login"
+    },
+    "login": {
+      "emailNotVerified": "Please confirm your email address before logging in."
     }
   }
 }

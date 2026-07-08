@@ -2,7 +2,7 @@
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Link from 'next/link';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { isAxiosError } from 'axios';
 import api from '@/lib/axios';
@@ -15,9 +15,9 @@ interface RegistrationFormData {
 }
 
 export default function RegistrationForm() {
-  const router = useRouter();
   const { locale } = useParams() as { locale: string };
   const tAuth = useTranslations('auth');
+  const tRegister = useTranslations('auth.register');
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     username: '',
@@ -27,6 +27,7 @@ export default function RegistrationForm() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [registered, setRegistered] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,8 +54,10 @@ export default function RegistrationForm() {
         email: formData.email.trim(),
         password: formData.password,
       });
-      // After registration, redirect to login page
-      router.push(`/${locale}/auth/login`);
+      // Registration no longer auto-logs-in — the account is unverified
+      // until the confirmation link is clicked, so show a "check your
+      // email" message instead of redirecting to login.
+      setRegistered(true);
     } catch (err: unknown) {
       if (
         isAxiosError(err) &&
@@ -69,6 +72,20 @@ export default function RegistrationForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (registered) {
+    return (
+      <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
+        <h1 className="text-2xl font-bold mb-4">{tRegister('checkEmailTitle')}</h1>
+        <p className="text-green-700">{tRegister('checkEmailMessage')}</p>
+        <p className="mt-4 text-center">
+          <Link href={`/${locale}/auth/login`} className="text-blue-500 hover:underline">
+            {tAuth('resetPassword.goToLogin')}
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
