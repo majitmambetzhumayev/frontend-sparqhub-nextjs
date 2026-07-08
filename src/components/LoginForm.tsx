@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
+import OAuthButtons from './OAuthButtons';
 
 type LoginFormProps = object;
 
@@ -107,6 +108,8 @@ export default function LoginForm({}: LoginFormProps) {
           {loading ? 'Logging in…' : 'Log In'}
         </button>
       </form>
+
+      <OAuthButtons />
     </div>
   );
 }

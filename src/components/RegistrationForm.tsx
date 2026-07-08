@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { isAxiosError } from 'axios';
 import api from '@/lib/axios';
+import OAuthButtons from './OAuthButtons';
 
 interface RegistrationFormData {
   username: string;
@@ -177,6 +178,8 @@ export default function RegistrationForm() {
           Login here
         </Link>
       </p>
+
+      <OAuthButtons />
     </div>
   );
 }

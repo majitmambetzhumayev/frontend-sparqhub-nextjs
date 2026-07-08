@@ -39,6 +39,11 @@
     },
     "login": {
       "emailNotVerified": "Veuillez confirmer votre adresse email avant de vous connecter."
+    },
+    "oauth": {
+      "orDivider": "ou",
+      "continueWithGoogle": "Continuer avec Google",
+      "continueWithGithub": "Continuer avec GitHub"
     }
   }
 }
