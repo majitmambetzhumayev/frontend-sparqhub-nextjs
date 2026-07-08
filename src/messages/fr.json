@@ -1,4 +1,29 @@
 {
   "welcome": "Bienvenue à SparqHub",
-  "dashboard": "Tableau de bord"
+  "dashboard": "Tableau de bord",
+  "auth": {
+    "emailLabel": "Email",
+    "forgotPasswordLink": "Mot de passe oublié ?",
+    "forgotPassword": {
+      "title": "Mot de passe oublié ?",
+      "description": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi en cours…",
+      "successMessage": "Si cet email est enregistré, un lien de réinitialisation a été envoyé.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Confirmer le nouveau mot de passe",
+      "submit": "Réinitialiser le mot de passe",
+      "submitting": "Réinitialisation…",
+      "successMessage": "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.",
+      "goToLogin": "Aller à la connexion",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
+      "invalidOrExpired": "Ce lien de réinitialisation est invalide ou a expiré.",
+      "missingParams": "Ce lien de réinitialisation est invalide."
+    }
+  }
 }
