@@ -3,10 +3,13 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { isAxiosError } from 'axios';
 import api from '@/lib/axios';
 
 interface RegistrationFormData {
   username: string;
+  email: string;
   password: string;
   confirmPassword: string;
 }
@@ -14,9 +17,11 @@ interface RegistrationFormData {
 export default function RegistrationForm() {
   const router = useRouter();
   const { locale } = useParams() as { locale: string };
+  const tAuth = useTranslations('auth');
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     username: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -36,8 +41,8 @@ export default function RegistrationForm() {
       setError('Passwords do not match.');
       return;
     }
-    if (!formData.username.trim() || !formData.password) {
-      setError('Username and password are required.');
+    if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
+      setError('Username, email and password are required.');
       return;
     }
 
@@ -45,12 +50,21 @@ export default function RegistrationForm() {
     try {
       await api.post('/api/auth/register/', {
         username: formData.username.trim(),
+        email: formData.email.trim(),
         password: formData.password,
       });
       // After registration, redirect to login page
       router.push(`/${locale}/auth/login`);
-    } catch {
-      setError('Registration failed. Please try again.');
+    } catch (err: unknown) {
+      if (
+        isAxiosError(err) &&
+        err.response?.data != null &&
+        typeof err.response.data.email?.[0] === 'string'
+      ) {
+        setError(err.response.data.email[0]);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -72,6 +86,22 @@ export default function RegistrationForm() {
             name="username"
             type="text"
             value={formData.username}
+            onChange={handleChange}
+            required
+            disabled={isSubmitting}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block mb-1 font-medium">
+            {tAuth('emailLabel')}
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
             onChange={handleChange}
             required
             disabled={isSubmitting}

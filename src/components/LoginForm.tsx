@@ -2,6 +2,8 @@
 
 import React, { useState, FormEvent, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import api from '@/lib/axios';
 import { isAxiosError } from 'axios';
 
@@ -10,6 +12,7 @@ type LoginFormProps = object;
 export default function LoginForm({}: LoginFormProps) {
   const router = useRouter();
   const { locale } = useParams() as { locale: string };
+  const t = useTranslations('auth');
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -81,6 +84,14 @@ export default function LoginForm({}: LoginFormProps) {
             required
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
           />
+          <div className="text-right mt-1">
+            <Link
+              href={`/${locale}/auth/forgot-password`}
+              className="text-sm text-blue-500 hover:underline"
+            >
+              {t('forgotPasswordLink')}
+            </Link>
+          </div>
         </div>
 
         <button

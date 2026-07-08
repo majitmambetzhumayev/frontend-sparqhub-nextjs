@@ -1,4 +1,29 @@
 {
   "welcome": "Welcome to SparqHub",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "auth": {
+    "emailLabel": "Email",
+    "forgotPasswordLink": "Forgot password?",
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "successMessage": "If that email is registered, a reset link has been sent.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "submit": "Reset password",
+      "submitting": "Resetting…",
+      "successMessage": "Your password has been reset. You can now log in.",
+      "goToLogin": "Go to login",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "invalidOrExpired": "This reset link is invalid or has expired.",
+      "missingParams": "This reset link is invalid."
+    }
+  }
 }
