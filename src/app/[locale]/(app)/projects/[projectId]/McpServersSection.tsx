@@ -2,6 +2,7 @@
 'use client';
 
 import React, { FC, useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { MCPServer, MCPServerInput, MCPTransport } from '@/types/mcpServer';
@@ -13,6 +14,8 @@ interface McpServersSectionProps {
 const emptyForm = { name: '', transport: 'stdio' as MCPTransport, command: '', args: '', url: '' };
 
 const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
+  const t = useTranslations('mcpServers');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const queryKey = ['mcp-servers', { project_id: projectId }];
 
@@ -33,7 +36,7 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
       setForm(emptyForm);
       setError(null);
     },
-    onError: () => setError('Could not add this tool server. Check the fields and try again.'),
+    onError: () => setError(t('addError')),
   });
 
   const toggleEnabled = useMutation({
@@ -49,16 +52,16 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
 
   const onDelete = useCallback(
     (server: MCPServer) => {
-      if (confirm(`Remove "${server.name}"? Conversations in this project will lose access to its tools.`)) {
+      if (confirm(t('removeConfirm', { name: server.name }))) {
         deleteServer.mutate(server.id);
       }
     },
-    [deleteServer],
+    [deleteServer, t],
   );
 
   const onSubmit = useCallback(() => {
     if (!form.name.trim()) {
-      setError('Name is required.');
+      setError(t('nameRequired'));
       return;
     }
     createServer.mutate({
@@ -69,25 +72,25 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
       args: form.transport === 'stdio' ? form.args.trim().split(/\s+/).filter(Boolean) : [],
       url: form.transport === 'sse' ? form.url.trim() : '',
     });
-  }, [form, projectId, createServer]);
+  }, [form, projectId, createServer, t]);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Tool servers (MCP)</h2>
+        <h2 className="text-lg font-semibold">{t('title')}</h2>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
             className="text-sm underline text-gray-500 hover:text-ink"
           >
-            + Add server
+            {t('addServerToggle')}
           </button>
         )}
       </div>
 
-      {isLoading && <p className="text-gray-500 text-sm">Loading…</p>}
+      {isLoading && <p className="text-gray-500 text-sm">{tCommon('loading')}</p>}
       {!isLoading && servers?.length === 0 && !isAdding && (
-        <p className="text-gray-500 text-sm">No tool servers yet. Conversations in this project have no MCP tools.</p>
+        <p className="text-gray-500 text-sm">{t('empty')}</p>
       )}
 
       {servers && servers.length > 0 && (
@@ -107,13 +110,13 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
                     checked={server.enabled}
                     onChange={(e) => toggleEnabled.mutate({ id: server.id, enabled: e.target.checked })}
                   />
-                  Enabled
+                  {t('enabled')}
                 </label>
                 <button
                   onClick={() => onDelete(server)}
                   className="text-sm underline text-gray-500 hover:text-ink"
                 >
-                  Remove
+                  {tCommon('remove')}
                 </button>
               </div>
             </li>
@@ -125,30 +128,30 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
         <div className="border rounded p-4 space-y-3">
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <div>
-            <label className="block mb-1 text-sm font-medium">Name</label>
+            <label className="block mb-1 text-sm font-medium">{t('nameLabel')}</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className="w-full border rounded px-3 py-2"
-              placeholder="e.g. Local file tools"
+              placeholder={t('namePlaceholder')}
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Transport</label>
+            <label className="block mb-1 text-sm font-medium">{t('transportLabel')}</label>
             <select
               value={form.transport}
               onChange={(e) => setForm((f) => ({ ...f, transport: e.target.value as MCPTransport }))}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="stdio">STDIO (local command)</option>
-              <option value="sse">SSE (remote URL)</option>
+              <option value="stdio">{t('stdioOption')}</option>
+              <option value="sse">{t('sseOption')}</option>
             </select>
           </div>
           {form.transport === 'stdio' ? (
             <>
               <div>
-                <label className="block mb-1 text-sm font-medium">Command</label>
+                <label className="block mb-1 text-sm font-medium">{t('commandLabel')}</label>
                 <input
                   type="text"
                   value={form.command}
@@ -158,7 +161,7 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium">Arguments</label>
+                <label className="block mb-1 text-sm font-medium">{t('argumentsLabel')}</label>
                 <input
                   type="text"
                   value={form.args}
@@ -170,7 +173,7 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
             </>
           ) : (
             <div>
-              <label className="block mb-1 text-sm font-medium">URL</label>
+              <label className="block mb-1 text-sm font-medium">{t('urlLabel')}</label>
               <input
                 type="text"
                 value={form.url}
@@ -190,14 +193,14 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
               disabled={createServer.isPending}
               className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
             <button
               onClick={onSubmit}
               disabled={createServer.isPending}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              {createServer.isPending ? 'Adding…' : 'Add server'}
+              {createServer.isPending ? t('adding') : t('addServerSubmit')}
             </button>
           </div>
         </div>

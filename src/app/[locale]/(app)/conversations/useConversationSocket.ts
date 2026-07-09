@@ -2,6 +2,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 type SocketStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
 
@@ -46,6 +47,7 @@ function wsUrl(): string {
 }
 
 export function useConversationSocket({ onDone, onError }: UseConversationSocketOptions) {
+  const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
   const bufferRef = useRef('');
   const [status, setStatus] = useState<SocketStatus>('idle');
@@ -88,7 +90,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
           socket = await openSocket();
         } catch {
           setStatus('error');
-          onError('Could not connect to the chat.');
+          onError(t('connectionFailed'));
           return;
         }
       }
@@ -121,7 +123,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
 
       socket.onerror = () => {
         setStatus('error');
-        onError('Lost connection to the chat.');
+        onError(t('connectionLost'));
       };
 
       socket.send(
@@ -134,7 +136,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
         }),
       );
     },
-    [openSocket, onDone, onError],
+    [openSocket, onDone, onError, t],
   );
 
   const sendConfirmation = useCallback((confirmed: boolean) => {

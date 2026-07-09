@@ -1,28 +1,34 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+// Locale-aware Link — auto-prefixes the current locale onto these bare
+// hrefs. Plain next/link here would navigate to unprefixed paths (e.g.
+// /dashboard instead of /en/dashboard), triggering an extra
+// middleware-driven redirect round-trip on every click.
+import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/context/AuthContext';
 import LogoutButton from './LogoutButton';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function PublicNavbar() {
   const { user, status } = useAuth();
+  const t = useTranslations('nav');
 
   const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
-  ];
+    { href: '/', key: 'home' },
+    { href: '/about', key: 'about' },
+    { href: '/contact', key: 'contact' },
+  ] as const;
 
   const authLinks = user
     ? [
-        { href: '/dashboard', label: 'Dashboard' },
+        { href: '/dashboard', key: 'dashboard' },
         { component: <LogoutButton key="logout" /> },
       ]
     : [
-        { href: '/auth/login', label: 'Login' },
-        { href: '/auth/register', label: 'Register' },
+        { href: '/auth/login', key: 'login' },
+        { href: '/auth/register', key: 'register' },
       ];
 
   return (
@@ -34,21 +40,21 @@ export default function PublicNavbar() {
           <LoadingSpinner size="small" />
         ) : (
           <ul className="flex items-center space-x-6">
-            {navLinks.map(({ href, label }) => (
+            {navLinks.map(({ href, key }) => (
               <li key={href}>
                 <Link href={href} className="text-ink hover:text-blue-500">
-                  {label}
+                  {t(key)}
                 </Link>
               </li>
             ))}
 
             {authLinks.map((item, index) =>
-              item.component ? (
+              'component' in item ? (
                 <li key={index}>{item.component}</li>
               ) : (
                 <li key={item.href}>
                   <Link href={item.href} className="text-ink hover:text-blue-500">
-                    {item.label}
+                    {t(item.key)}
                   </Link>
                 </li>
               )

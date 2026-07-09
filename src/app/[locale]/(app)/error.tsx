@@ -1,6 +1,7 @@
 // src/app/[locale]/(app)/error.tsx
 'use client';
 
+import { useTranslations } from 'next-intl';
 import ErrorFallback from '@/components/ErrorFallback';
 import { useReportError } from '@/lib/useReportError';
 
@@ -14,11 +15,12 @@ export default function AppError({
   reset: () => void;
 }) {
   useReportError(error);
+  const t = useTranslations('errors');
 
   return (
     <div className="flex-1 flex items-center justify-center p-6">
       <ErrorFallback
-        message="This page ran into an error. Try again, or pick something else from the sidebar."
+        message={t('appErrorMessage')}
         onRetry={reset}
       />
     </div>

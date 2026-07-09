@@ -3,11 +3,14 @@
 
 import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Project } from '@/types/project';
 
 export default function ProjectsPage() {
+  const t = useTranslations('projects');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -38,27 +41,27 @@ export default function ProjectsPage() {
 
   const onDelete = useCallback(
     (id: number) => {
-      if (confirm('Delete this project? Its conversations will move to "No project", not be deleted.')) {
+      if (confirm(t('deleteConfirm'))) {
         deleteProject.mutate(id);
       }
     },
-    [deleteProject],
+    [deleteProject, t],
   );
 
   return (
     <div className="p-6 space-y-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold">Projects</h1>
+      <h1 className="text-2xl font-bold">{t('title')}</h1>
 
       <div className="border rounded p-4 space-y-2">
         <input
           type="text"
-          placeholder="Project name…"
+          placeholder={t('namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full border rounded px-3 py-2"
         />
         <textarea
-          placeholder="Description (optional)…"
+          placeholder={t('descriptionPlaceholder')}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="w-full border rounded px-3 py-2"
@@ -68,12 +71,12 @@ export default function ProjectsPage() {
           disabled={!name.trim() || createProject.isPending}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          New project
+          {t('newProject')}
         </button>
       </div>
 
-      {isLoading && <p className="text-gray-500">Loading…</p>}
-      {!isLoading && data?.length === 0 && <p className="text-gray-500">No projects yet.</p>}
+      {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
+      {!isLoading && data?.length === 0 && <p className="text-gray-500">{t('empty')}</p>}
 
       <ul className="divide-y border rounded">
         {data?.map((project) => (
@@ -81,14 +84,14 @@ export default function ProjectsPage() {
             <Link href={`/projects/${project.id}`} className="flex-1">
               <p className="font-medium">{project.name}</p>
               <p className="text-sm text-gray-500">
-                {project.thread_count} conversation{project.thread_count === 1 ? '' : 's'}
+                {t('threadCount', { count: project.thread_count })}
               </p>
             </Link>
             <button
               onClick={() => onDelete(project.id)}
               className="px-3 py-1 border border-gray-200 text-ink rounded text-sm hover:bg-gray-100"
             >
-              Delete
+              {tCommon('delete')}
             </button>
           </li>
         ))}

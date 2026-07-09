@@ -2,6 +2,7 @@
 'use client';
 
 import React, { FC } from 'react';
+import { useTranslations } from 'next-intl';
 import type { PendingConfirmation } from './useConversationSocket';
 
 export interface ToolConfirmationCardProps {
@@ -10,20 +11,18 @@ export interface ToolConfirmationCardProps {
   onCancel: () => void;
 }
 
-const TOOL_TITLES: Record<string, string> = {
-  delegate_to_model: 'Delegate to another model',
-};
-
 function formatArgLabel(key: string): string {
   return key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
 }
 
 const ToolConfirmationCard: FC<ToolConfirmationCardProps> = ({ confirmation, onConfirm, onCancel }) => {
-  const title = TOOL_TITLES[confirmation.tool] ?? confirmation.tool;
+  const t = useTranslations('conversations');
+  const tCommon = useTranslations('common');
+  const title = confirmation.tool === 'delegate_to_model' ? t('delegateToModel') : confirmation.tool;
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 max-w-3xl mx-auto space-y-3">
-      <p className="text-sm font-semibold text-ink">Wants to use: {title}</p>
+      <p className="text-sm font-semibold text-ink">{t('wantsToUse', { title })}</p>
       <dl className="text-sm space-y-1">
         {Object.entries(confirmation.arguments).map(([key, value]) => (
           <div key={key} className="flex gap-2">
@@ -37,13 +36,13 @@ const ToolConfirmationCard: FC<ToolConfirmationCardProps> = ({ confirmation, onC
           onClick={onCancel}
           className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
         >
-          Cancel
+          {tCommon('cancel')}
         </button>
         <button
           onClick={onConfirm}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Confirm
+          {tCommon('confirm')}
         </button>
       </div>
     </div>

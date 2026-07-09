@@ -1,6 +1,7 @@
 // src/app/[locale]/page.tsx
 
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import PublicNavbar from '@/components/PublicNavbar'
@@ -19,24 +20,21 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound()
   }
 
+  const t = await getTranslations({ locale, namespace: 'home' })
+  const tNav = await getTranslations({ locale, namespace: 'nav' })
+
   return (
     <main className="p-6">
       <PublicNavbar />
-      <h1 className="text-3xl font-bold">
-        {locale === 'fr' ? 'Bienvenue sur SparqHub' : 'Welcome to SparqHub'}
-      </h1>
-      <p className="mt-2">
-        {locale === 'fr'
-          ? 'Commencez en naviguant :'
-          : 'Get started by navigating:'}
-      </p>
+      <h1 className="text-3xl font-bold">{t('title')}</h1>
+      <p className="mt-2">{t('getStarted')}</p>
 
       <div className="mt-4 space-x-4">
         <Link
           href="/dashboard"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          {locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
+          {tNav('dashboard')}
         </Link>
       </div>
     </main>

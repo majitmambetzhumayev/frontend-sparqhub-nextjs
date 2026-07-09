@@ -3,6 +3,7 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { useConversationSocket } from '../useConversationSocket';
@@ -11,6 +12,7 @@ import ChatWindow, { ChatWindowMessage } from '../ChatWindow';
 import { useSetHeaderContent } from '@/context/HeaderContentContext';
 
 export default function NewConversationPage() {
+  const t = useTranslations('conversations');
   const router = useRouter();
   const queryClient = useQueryClient();
   const { refreshUser } = useAuth();
@@ -50,11 +52,11 @@ export default function NewConversationPage() {
   const headerContent = useMemo(
     () => (
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-lg font-semibold">New conversation</h1>
+        <h1 className="text-lg font-semibold">{t('newConversationTitle')}</h1>
         <ProviderModelPicker aiProvider={aiProvider} model={model} onChange={onProviderModelChange} disabled={isBusy} />
       </div>
     ),
-    [aiProvider, model, onProviderModelChange, isBusy],
+    [aiProvider, model, onProviderModelChange, isBusy, t],
   );
 
   useSetHeaderContent(headerContent);
@@ -77,7 +79,7 @@ export default function NewConversationPage() {
           <div className="flex space-x-2">
             <input
               type="text"
-              placeholder="Type your message…"
+              placeholder={t('messagePlaceholder')}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onSend()}
@@ -89,7 +91,7 @@ export default function NewConversationPage() {
               disabled={!input.trim() || isBusy}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              Send
+              {t('send')}
             </button>
           </div>
         </div>

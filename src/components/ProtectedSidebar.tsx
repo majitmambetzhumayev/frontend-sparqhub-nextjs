@@ -4,23 +4,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import LogoutButton from './LogoutButton';
 
 const navItems = [
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Conversations', href: '/conversations' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'Settings', href: '/settings' },
-];
+  { key: 'dashboard', href: '/dashboard' },
+  { key: 'conversations', href: '/conversations' },
+  { key: 'projects', href: '/projects' },
+  { key: 'settings', href: '/settings' },
+] as const;
 
 const adminNavItems = [
-  { label: 'Users', href: '/users' },
-];
+  { key: 'users', href: '/users' },
+] as const;
 
 export default function ProtectedSidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const t = useTranslations('nav');
 
   const items = user?.is_staff ? [...navItems, ...adminNavItems] : navItems;
 
@@ -36,7 +38,7 @@ export default function ProtectedSidebar() {
               pathname === item.href ? 'bg-gray-100 font-semibold' : ''
             }`}
           >
-            {item.label}
+            {t(item.key)}
           </Link>
         ))}
       </nav>

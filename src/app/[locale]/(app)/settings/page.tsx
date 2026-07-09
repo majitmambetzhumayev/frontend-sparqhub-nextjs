@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +11,9 @@ import type { ProvidersResponse } from '@/types/assistant';
 import type { AdminUser } from '@/types/adminUser';
 
 export default function SettingsPage() {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
+  const tTopbar = useTranslations('topbar');
   const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
   const [rawKeys, setRawKeys] = useState<Record<string, string>>({});
@@ -63,18 +67,18 @@ export default function SettingsPage() {
   return (
     <div className="p-6 space-y-8 max-w-2xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
       </div>
 
       <section className="space-y-2">
-        <h2 className="text-lg font-semibold">Account</h2>
+        <h2 className="text-lg font-semibold">{t('account')}</h2>
         <div className="border rounded p-4 space-y-3">
           <div>
-            <p className="text-sm text-gray-500">Username</p>
+            <p className="text-sm text-gray-500">{t('username')}</p>
             <p className="font-medium">{user?.username}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Shared credits remaining</p>
+            <p className="text-sm text-gray-500">{tTopbar('creditsTitle')}</p>
             <p className="font-medium">{user?.credits_remaining}</p>
           </div>
         </div>
@@ -82,9 +86,9 @@ export default function SettingsPage() {
 
       {user?.is_staff && (
         <section className="space-y-2">
-          <h2 className="text-lg font-semibold">Admin</h2>
+          <h2 className="text-lg font-semibold">{t('admin')}</h2>
           <div className="border rounded p-4 space-y-3">
-            <p className="text-sm text-gray-500">Adjust your own shared-key credit balance.</p>
+            <p className="text-sm text-gray-500">{t('adminCreditsDescription')}</p>
             {isEditingOwnCredits ? (
               <div className="flex items-center gap-2">
                 <input
@@ -100,24 +104,24 @@ export default function SettingsPage() {
                   disabled={updateOwnCredits.isPending}
                   className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
                 >
-                  Save
+                  {tCommon('save')}
                 </button>
                 <button
                   onClick={() => setIsEditingOwnCredits(false)}
                   disabled={updateOwnCredits.isPending}
                   className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
                 >
-                  Cancel
+                  {tCommon('cancel')}
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="font-medium">{user.credits_remaining} credits</span>
+                <span className="font-medium">{tTopbar('credits', { count: user.credits_remaining })}</span>
                 <button
                   onClick={startEditingOwnCredits}
                   className="text-sm underline text-gray-500 hover:text-ink"
                 >
-                  Edit
+                  {tCommon('edit')}
                 </button>
               </div>
             )}
@@ -126,9 +130,9 @@ export default function SettingsPage() {
       )}
 
       <section className="space-y-2">
-        <h2 className="text-lg font-semibold">API Keys</h2>
+        <h2 className="text-lg font-semibold">{t('apiKeys')}</h2>
         <p className="text-sm text-gray-500">
-          Bring your own API key for a provider to use it instead of the shared default.
+          {t('apiKeysDescription')}
         </p>
 
         <div className="divide-y border rounded">
@@ -140,13 +144,13 @@ export default function SettingsPage() {
                   <div>
                     <p className="font-medium">{info.label}</p>
                     <p className="text-sm text-gray-500">
-                      {configured ? 'Configured' : 'Not configured — using shared default key'}
+                      {configured ? t('configured') : t('notConfigured')}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
                       type="password"
-                      placeholder={configured ? '•••• replace key' : 'Enter API key'}
+                      placeholder={configured ? t('replaceKeyPlaceholder') : t('enterKeyPlaceholder')}
                       value={rawKeys[key] ?? ''}
                       onChange={(e) => setRawKeys((prev) => ({ ...prev, [key]: e.target.value }))}
                       className="border rounded px-2 py-1 text-sm"
@@ -156,7 +160,7 @@ export default function SettingsPage() {
                       disabled={!rawKeys[key]?.trim() || saveKey.isPending}
                       className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
                     >
-                      Save
+                      {tCommon('save')}
                     </button>
                     {configured && (
                       <button
@@ -164,7 +168,7 @@ export default function SettingsPage() {
                         disabled={deleteKey.isPending}
                         className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300 disabled:opacity-50"
                       >
-                        Remove
+                        {tCommon('remove')}
                       </button>
                     )}
                   </div>

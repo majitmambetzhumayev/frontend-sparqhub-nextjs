@@ -2,6 +2,7 @@
 'use client';
 
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Project } from '@/types/project';
@@ -21,6 +22,9 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
   onConfirm,
   onClose,
 }) => {
+  const t = useTranslations('conversations');
+  const tProjects = useTranslations('projects');
+  const tCommon = useTranslations('common');
   const [selected, setSelected] = useState<number | null>(currentProjectId);
 
   useEffect(() => {
@@ -38,16 +42,16 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">Move conversation</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('moveModalTitle')}</h2>
 
-        <label className="block mb-1 font-medium text-sm">Project</label>
+        <label className="block mb-1 font-medium text-sm">{tProjects('projectLabel')}</label>
         <select
           value={selected ?? ''}
           onChange={(e) => setSelected(e.target.value ? Number(e.target.value) : null)}
           disabled={isSubmitting}
           className="w-full border rounded px-3 py-2 mb-6"
         >
-          <option value="">No project</option>
+          <option value="">{tProjects('noProject')}</option>
           {projects?.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
@@ -62,7 +66,7 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
             disabled={isSubmitting}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
           <button
             type="button"
@@ -70,7 +74,7 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
             disabled={isSubmitting || selected === currentProjectId}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
           >
-            {isSubmitting ? 'Moving…' : 'Confirm'}
+            {isSubmitting ? t('moving') : tCommon('confirm')}
           </button>
         </div>
       </div>
