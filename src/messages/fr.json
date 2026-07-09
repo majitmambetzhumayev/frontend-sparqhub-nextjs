@@ -50,6 +50,7 @@
     "usingTool": "Utilisation de l'outil : {tool}…",
     "usedTool": "Utilisé : {tool}",
     "thinking": "Réflexion…",
+    "resuming": "Reconnexion à une réponse en cours…",
     "noMessages": "Aucun message pour l'instant.",
     "moveModalTitle": "Déplacer la conversation",
     "moving": "Déplacement…",
