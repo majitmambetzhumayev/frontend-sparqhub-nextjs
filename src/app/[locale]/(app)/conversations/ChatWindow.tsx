@@ -11,6 +11,7 @@ import type { PendingConfirmation } from './useConversationSocket';
 export interface ChatWindowMessage {
   sender: 'user' | 'assistant';
   content: string;
+  toolCalls?: string[];
 }
 
 export type ChatActivityStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
@@ -20,6 +21,7 @@ export interface ChatWindowProps {
   streamingText?: string;
   status?: ChatActivityStatus;
   activeTool?: string | null;
+  toolTrace?: string[];
   pendingConfirmation?: PendingConfirmation | null;
   onConfirmTool?: () => void;
   onCancelTool?: () => void;
@@ -34,6 +36,23 @@ function AssistantMessage({ content }: { content: string }) {
   return (
     <div className={PROSE_CLASSES}>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    </div>
+  );
+}
+
+function ToolTrace({ toolCalls }: { toolCalls: string[] }) {
+  const t = useTranslations('conversations');
+  if (toolCalls.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {toolCalls.map((tool, idx) => (
+        <span
+          key={idx}
+          className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full"
+        >
+          {t('usedTool', { tool })}
+        </span>
+      ))}
     </div>
   );
 }
@@ -63,6 +82,7 @@ export default function ChatWindow({
   streamingText,
   status = 'idle',
   activeTool,
+  toolTrace = [],
   pendingConfirmation,
   onConfirmTool,
   onCancelTool,
@@ -72,7 +92,7 @@ export default function ChatWindow({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: 'end' });
-  }, [messages, streamingText, status]);
+  }, [messages, streamingText, status, toolTrace]);
 
   const showActivityIndicator =
     !streamingText && status !== 'confirm_required' && (status === 'connecting' || status === 'thinking' || status === 'tool_call');
@@ -81,7 +101,7 @@ export default function ChatWindow({
   return (
     <div className="flex-1 min-h-0 overflow-y-auto">
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        {messages.length === 0 && !streamingText && !showActivityIndicator && !showConfirmationCard ? (
+        {messages.length === 0 && !streamingText && toolTrace.length === 0 && !showActivityIndicator && !showConfirmationCard ? (
           <p className="text-gray-500">{t('noMessages')}</p>
         ) : (
           <>
@@ -93,10 +113,18 @@ export default function ChatWindow({
                   </div>
                 </div>
               ) : (
-                <AssistantMessage key={idx} content={m.content} />
+                <div key={idx} className="space-y-1.5">
+                  {m.toolCalls && m.toolCalls.length > 0 && <ToolTrace toolCalls={m.toolCalls} />}
+                  <AssistantMessage content={m.content} />
+                </div>
               ),
             )}
-            {streamingText && <AssistantMessage content={streamingText} />}
+            {(streamingText || toolTrace.length > 0) && (
+              <div className="space-y-1.5">
+                {toolTrace.length > 0 && <ToolTrace toolCalls={toolTrace} />}
+                {streamingText && <AssistantMessage content={streamingText} />}
+              </div>
+            )}
             {showActivityIndicator && <ActivityIndicator status={status} activeTool={activeTool} />}
             {showConfirmationCard && onConfirmTool && onCancelTool && (
               <ToolConfirmationCard confirmation={pendingConfirmation} onConfirm={onConfirmTool} onCancel={onCancelTool} />

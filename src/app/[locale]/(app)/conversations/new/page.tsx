@@ -24,7 +24,7 @@ export default function NewConversationPage() {
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const { sendMessage, sendConfirmation, status, streamingText, activeTool, pendingConfirmation } = useConversationSocket({
+  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
     onDone: (_fullText, threadId) => {
       queryClient.invalidateQueries({ queryKey: ['threads'] });
       void refreshUser();
@@ -68,6 +68,7 @@ export default function NewConversationPage() {
         streamingText={streamingText}
         status={status}
         activeTool={activeTool}
+        toolTrace={toolTrace}
         pendingConfirmation={pendingConfirmation}
         onConfirmTool={() => sendConfirmation(true)}
         onCancelTool={() => sendConfirmation(false)}
