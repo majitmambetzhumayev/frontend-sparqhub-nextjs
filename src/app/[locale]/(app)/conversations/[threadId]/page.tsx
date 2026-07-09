@@ -24,7 +24,7 @@ export default function ConversationPage() {
   const queryClient = useQueryClient();
   const { refreshUser } = useAuth();
 
-  const [messages, setMessages] = useState<{ sender: 'user' | 'assistant'; content: string }[]>([]);
+  const [messages, setMessages] = useState<{ sender: 'user' | 'assistant'; content: string; toolCalls?: string[] }[]>([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -43,12 +43,12 @@ export default function ConversationPage() {
 
   useEffect(() => {
     if (!history) return;
-    setMessages(history.map((m) => ({ sender: m.sender, content: m.content })));
+    setMessages(history.map((m) => ({ sender: m.sender, content: m.content, toolCalls: m.tool_calls })));
   }, [history]);
 
-  const { sendMessage, sendConfirmation, status, streamingText, activeTool, pendingConfirmation } = useConversationSocket({
-    onDone: (fullText) => {
-      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText }]);
+  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
+    onDone: (fullText, _threadId, toolCalls) => {
+      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
       queryClient.invalidateQueries({ queryKey: ['threads'] });
       void refreshUser();
     },
@@ -178,6 +178,7 @@ export default function ConversationPage() {
         streamingText={streamingText}
         status={status}
         activeTool={activeTool}
+        toolTrace={toolTrace}
         pendingConfirmation={pendingConfirmation}
         onConfirmTool={() => sendConfirmation(true)}
         onCancelTool={() => sendConfirmation(false)}

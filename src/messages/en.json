@@ -48,6 +48,7 @@
     "untitled": "New conversation",
     "generatingImage": "Generating image…",
     "usingTool": "Using tool: {tool}…",
+    "usedTool": "Used: {tool}",
     "thinking": "Thinking…",
     "noMessages": "No messages yet.",
     "moveModalTitle": "Move conversation",

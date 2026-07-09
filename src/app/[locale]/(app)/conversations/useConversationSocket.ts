@@ -37,7 +37,7 @@ interface ErrorFrame {
 type ServerFrame = ChunkFrame | StatusFrame | DoneFrame | ErrorFrame;
 
 interface UseConversationSocketOptions {
-  onDone: (fullText: string, threadId: number) => void;
+  onDone: (fullText: string, threadId: number, toolCalls: string[]) => void;
   onError: (message: string) => void;
 }
 
@@ -50,18 +50,27 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
   const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
   const bufferRef = useRef('');
+  // Completed tool-call steps for the turn currently in flight, in order —
+  // activeTool alone only ever showed the latest one, overwriting the
+  // previous step the moment a new frame arrived. A ref (like bufferRef)
+  // rather than relying solely on the toolTrace state below, so the 'done'
+  // handler reads the up-to-date list rather than a stale closure over it.
+  const toolTraceRef = useRef<string[]>([]);
   const [status, setStatus] = useState<SocketStatus>('idle');
   const [streamingText, setStreamingText] = useState('');
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [toolTrace, setToolTrace] = useState<string[]>([]);
   const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation | null>(null);
 
   const close = useCallback(() => {
     socketRef.current?.close();
     socketRef.current = null;
     bufferRef.current = '';
+    toolTraceRef.current = [];
     setStatus('idle');
     setStreamingText('');
     setActiveTool(null);
+    setToolTrace([]);
     setPendingConfirmation(null);
   }, []);
 
@@ -80,8 +89,10 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     async (threadId: number | null, text: string, aiProvider?: string, model?: string, projectId?: number) => {
       setStatus('connecting');
       bufferRef.current = '';
+      toolTraceRef.current = [];
       setStreamingText('');
       setActiveTool(null);
+      setToolTrace([]);
       setPendingConfirmation(null);
 
       let socket = socketRef.current;
@@ -107,11 +118,17 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
           setStatus(data.status);
           setActiveTool(data.status === 'tool_call' || data.status === 'confirm_required' ? data.tool : null);
           setPendingConfirmation(data.status === 'confirm_required' ? { tool: data.tool, arguments: data.arguments } : null);
+          if (data.status === 'tool_call') {
+            toolTraceRef.current = [...toolTraceRef.current, data.tool];
+            setToolTrace(toolTraceRef.current);
+          }
         } else if ('done' in data) {
-          onDone(bufferRef.current, data.thread_id);
+          onDone(bufferRef.current, data.thread_id, toolTraceRef.current);
           bufferRef.current = '';
+          toolTraceRef.current = [];
           setStreamingText('');
           setActiveTool(null);
+          setToolTrace([]);
           setPendingConfirmation(null);
           setStatus('idle');
         } else if ('error' in data) {
@@ -147,5 +164,5 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     socket.send(JSON.stringify({ type: 'tool_confirmation', confirmed }));
   }, []);
 
-  return { sendMessage, sendConfirmation, status, streamingText, activeTool, pendingConfirmation, close };
+  return { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation, close };
 }

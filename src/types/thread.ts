@@ -6,6 +6,7 @@ export interface Message {
   timestamp: string;
   edited: boolean;
   read: boolean;
+  tool_calls: string[];
 }
 
 export interface ThreadListItem {
