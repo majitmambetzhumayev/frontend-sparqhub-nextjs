@@ -4,6 +4,7 @@
 import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Project } from '@/types/project';
@@ -11,6 +12,9 @@ import type { ThreadListItem } from '@/types/thread';
 import McpServersSection from './McpServersSection';
 
 export default function ProjectDetailPage() {
+  const t = useTranslations('projects');
+  const tConversations = useTranslations('conversations');
+  const tCommon = useTranslations('common');
   const params = useParams<{ projectId: string }>();
   const projectId = Number(params.projectId);
   const router = useRouter();
@@ -59,15 +63,15 @@ export default function ProjectDetailPage() {
   }, [nameDraft, project?.name, updateName]);
 
   const onDeleteProject = useCallback(() => {
-    if (confirm('Delete this project? Its conversations will move to "No project", not be deleted.')) {
+    if (confirm(t('deleteConfirm'))) {
       deleteProject.mutate();
     }
-  }, [deleteProject]);
+  }, [deleteProject, t]);
 
   return (
     <div className="p-6 space-y-4 max-w-2xl mx-auto">
       <Link href="/projects" className="text-sm text-gray-500 hover:text-ink">
-        ← Projects
+        ← {t('title')}
       </Link>
 
       <div className="flex items-center justify-between">
@@ -88,16 +92,16 @@ export default function ProjectDetailPage() {
           <h1
             onClick={startEditingName}
             className="text-2xl font-bold cursor-pointer hover:bg-gray-100 rounded px-2 py-1 -mx-2"
-            title="Click to rename"
+            title={tConversations('clickToRename')}
           >
-            {project?.name || 'Project'}
+            {project?.name || t('fallbackTitle')}
           </h1>
         )}
         <button
           onClick={onDeleteProject}
           className="px-3 py-1 border border-gray-200 text-ink rounded text-sm hover:bg-gray-100"
         >
-          Delete project
+          {t('deleteProject')}
         </button>
       </div>
 
@@ -107,17 +111,17 @@ export default function ProjectDetailPage() {
         href={`/conversations/new?project=${projectId}`}
         className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
-        New chat in this project
+        {t('newChatInProject')}
       </Link>
 
-      {isLoading && <p className="text-gray-500">Loading…</p>}
-      {!isLoading && threads?.length === 0 && <p className="text-gray-500">No conversations in this project yet.</p>}
+      {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
+      {!isLoading && threads?.length === 0 && <p className="text-gray-500">{t('emptyThreads')}</p>}
 
       <ul className="divide-y border rounded">
         {threads?.map((thread) => (
           <li key={thread.id}>
             <Link href={`/conversations/${thread.id}`} className="block px-4 py-3 hover:bg-gray-50">
-              <p className="font-medium truncate">{thread.title || 'New conversation'}</p>
+              <p className="font-medium truncate">{thread.title || tConversations('untitled')}</p>
               <p className="text-sm text-gray-500">
                 {thread.model} · {new Date(thread.updated_at).toLocaleString()}
               </p>

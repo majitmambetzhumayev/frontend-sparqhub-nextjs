@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import type { Assistant } from '@/types/assistant';
 
 export interface AssistantListProps {
@@ -15,8 +16,11 @@ export default function AssistantList({
   onEdit,
   onDelete,
 }: AssistantListProps) {
+  const t = useTranslations('assistants');
+  const tCommon = useTranslations('common');
+
   if (assistants.length === 0) {
-    return <p className="text-gray-600">No assistants yet.</p>;
+    return <p className="text-gray-600">{t('empty')}</p>;
   }
 
   return (
@@ -33,14 +37,14 @@ export default function AssistantList({
               onClick={() => onEdit(assistant)}
               className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Edit
+              {tCommon('edit')}
             </button>
             <button
               type="button"
               onClick={() => onDelete(assistant.id)}
               className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
             >
-              Delete
+              {tCommon('delete')}
             </button>
           </div>
         </li>

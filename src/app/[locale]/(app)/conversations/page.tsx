@@ -3,12 +3,15 @@
 
 import React, { useCallback } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { ThreadListItem } from '@/types/thread';
 
 export default function ConversationsPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('conversations');
+  const tCommon = useTranslations('common');
 
   const { data, isLoading } = useQuery<ThreadListItem[], Error>({
     queryKey: ['threads'],
@@ -24,29 +27,29 @@ export default function ConversationsPage() {
     (e: React.MouseEvent, id: number) => {
       e.preventDefault();
       e.stopPropagation();
-      if (confirm('Delete this conversation? This cannot be undone.')) {
+      if (confirm(t('deleteConfirm'))) {
         deleteThread.mutate(id);
       }
     },
-    [deleteThread],
+    [deleteThread, t],
   );
 
   return (
     <div className="p-6 space-y-4 max-w-2xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Conversations</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <Link
           href="/conversations/new"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          New chat
+          {t('newChat')}
         </Link>
       </div>
 
-      {isLoading && <p className="text-gray-500">Loading…</p>}
+      {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
 
       {!isLoading && data?.length === 0 && (
-        <p className="text-gray-500">No conversations yet. Start a new chat.</p>
+        <p className="text-gray-500">{t('empty')}</p>
       )}
 
       <ul className="divide-y border rounded">
@@ -57,7 +60,7 @@ export default function ConversationsPage() {
               className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
             >
               <div className="min-w-0">
-                <p className="font-medium truncate">{thread.title || 'New conversation'}</p>
+                <p className="font-medium truncate">{thread.title || t('untitled')}</p>
                 <p className="text-sm text-gray-500">
                   {thread.model} · {new Date(thread.updated_at).toLocaleString()}
                 </p>
@@ -66,7 +69,7 @@ export default function ConversationsPage() {
                 onClick={(e) => onDelete(e, thread.id)}
                 className="ml-4 shrink-0 px-3 py-1 border border-gray-200 text-ink rounded text-sm hover:bg-gray-100"
               >
-                Delete
+                {tCommon('delete')}
               </button>
             </Link>
           </li>

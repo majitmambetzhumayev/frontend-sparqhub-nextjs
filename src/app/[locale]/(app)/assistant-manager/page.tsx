@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Assistant } from '@/types/assistant';
@@ -10,6 +11,7 @@ import AssistantModal from '@/components/AssistantModal';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AssistantManagerPage() {
+  const t = useTranslations('assistants');
   const queryClient = useQueryClient();
 
   // Modal state
@@ -83,24 +85,24 @@ export default function AssistantManagerPage() {
   }) => upsert(data);
 
   const handleDelete = (id: number) => {
-    if (confirm('Delete this assistant?')) {
+    if (confirm(t('deleteConfirm'))) {
       deleteMutate(id);
     }
   };
 
   if (isFetching) return <LoadingSpinner />;
-  if (isError) return <p className="text-red-600">Error: {error?.message}</p>;
+  if (isError) return <p className="text-red-600">{t('error', { message: error?.message ?? '' })}</p>;
 
   return (
     <div className="p-6">
       <header className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Assistant Manager</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <button
           type="button"
           onClick={openNew}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
-          New Assistant
+          {t('newAssistant')}
         </button>
       </header>
 

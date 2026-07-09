@@ -2,6 +2,7 @@
 'use client';
 
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Assistant, ProvidersResponse } from '@/types/assistant';
@@ -27,6 +28,8 @@ const AssistantModal: FC<AssistantModalProps> = ({
   onSubmit,
   onClose,
 }) => {
+  const t = useTranslations('assistants');
+  const tCommon = useTranslations('common');
   const [name, setName] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
   const [aiProvider, setAiProvider] = useState<string>('');
@@ -82,12 +85,12 @@ const AssistantModal: FC<AssistantModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4">
-          {assistant ? 'Edit Assistant' : 'New Assistant'}
+          {assistant ? t('editAssistant') : t('newAssistant')}
         </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block mb-1 font-medium">Name</label>
+            <label className="block mb-1 font-medium">{t('nameLabel')}</label>
             <input
               type="text"
               value={name}
@@ -99,7 +102,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Instructions</label>
+            <label className="block mb-1 font-medium">{t('instructionsLabel')}</label>
             <textarea
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
@@ -109,7 +112,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Provider</label>
+            <label className="block mb-1 font-medium">{t('providerLabel')}</label>
             <select
               value={aiProvider}
               onChange={(e) => onProviderChange(e.target.value)}
@@ -126,7 +129,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Model</label>
+            <label className="block mb-1 font-medium">{t('modelLabel')}</label>
             <select
               value={model}
               onChange={(e) => setModel(e.target.value)}
@@ -149,7 +152,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
             disabled={isSubmitting}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
           <button
             type="button"
@@ -165,7 +168,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
             disabled={isSubmitting || !name.trim() || !model || !aiProvider}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
           >
-            {isSubmitting ? 'Saving…' : 'Save'}
+            {isSubmitting ? tCommon('saving') : tCommon('save')}
           </button>
         </div>
       </div>

@@ -1,6 +1,141 @@
 {
-  "welcome": "Bienvenue à SparqHub",
-  "dashboard": "Tableau de bord",
+  "home": {
+    "title": "Bienvenue sur SparqHub",
+    "getStarted": "Commencez en naviguant :"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "contact": "Contact",
+    "dashboard": "Tableau de bord",
+    "conversations": "Conversations",
+    "projects": "Projets",
+    "settings": "Paramètres",
+    "users": "Utilisateurs",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur votre tableau de bord"
+  },
+  "topbar": {
+    "creditsTitle": "Crédits partagés restants",
+    "credits": "{count} crédits",
+    "profileAlt": "Profil"
+  },
+  "errors": {
+    "title": "Une erreur est survenue",
+    "defaultMessage": "Une erreur inattendue s'est produite. Réessayez, ou choisissez autre chose.",
+    "tryAgain": "Réessayer",
+    "appErrorMessage": "Cette page a rencontré une erreur. Réessayez, ou choisissez autre chose dans le menu."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "delete": "Supprimer",
+    "remove": "Retirer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "edit": "Modifier"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "newChat": "Nouvelle conversation",
+    "deleteConfirm": "Supprimer cette conversation ? Cette action est irréversible.",
+    "empty": "Aucune conversation pour l'instant. Démarrez une nouvelle conversation.",
+    "untitled": "Nouvelle conversation",
+    "generatingImage": "Génération de l'image…",
+    "usingTool": "Utilisation de l'outil : {tool}…",
+    "thinking": "Réflexion…",
+    "noMessages": "Aucun message pour l'instant.",
+    "moveModalTitle": "Déplacer la conversation",
+    "moving": "Déplacement…",
+    "newConversationTitle": "Nouvelle conversation",
+    "messagePlaceholder": "Écrivez votre message…",
+    "send": "Envoyer",
+    "clickToRename": "Cliquez pour renommer",
+    "fallbackTitle": "Conversation",
+    "delegateToModel": "Déléguer à un autre modèle",
+    "wantsToUse": "Souhaite utiliser : {title}",
+    "connectionFailed": "Impossible de se connecter au chat.",
+    "connectionLost": "Connexion au chat perdue."
+  },
+  "projects": {
+    "title": "Projets",
+    "projectLabel": "Projet",
+    "noProject": "Aucun projet",
+    "namePlaceholder": "Nom du projet…",
+    "descriptionPlaceholder": "Description (facultatif)…",
+    "newProject": "Nouveau projet",
+    "empty": "Aucun projet pour l'instant.",
+    "threadCount": "{count, plural, one {# conversation} other {# conversations}}",
+    "deleteConfirm": "Supprimer ce projet ? Ses conversations seront déplacées vers \"Aucun projet\", pas supprimées.",
+    "fallbackTitle": "Projet",
+    "deleteProject": "Supprimer le projet",
+    "newChatInProject": "Nouvelle conversation dans ce projet",
+    "emptyThreads": "Aucune conversation dans ce projet pour l'instant."
+  },
+  "mcpServers": {
+    "title": "Serveurs d'outils (MCP)",
+    "addServerToggle": "+ Ajouter un serveur",
+    "empty": "Aucun serveur d'outils pour l'instant. Les conversations de ce projet n'ont accès à aucun outil MCP.",
+    "enabled": "Activé",
+    "addError": "Impossible d'ajouter ce serveur d'outils. Vérifiez les champs et réessayez.",
+    "removeConfirm": "Retirer \"{name}\" ? Les conversations de ce projet perdront l'accès à ses outils.",
+    "nameRequired": "Le nom est requis.",
+    "nameLabel": "Nom",
+    "namePlaceholder": "ex. Outils fichiers locaux",
+    "transportLabel": "Transport",
+    "stdioOption": "STDIO (commande locale)",
+    "sseOption": "SSE (URL distante)",
+    "commandLabel": "Commande",
+    "argumentsLabel": "Arguments",
+    "urlLabel": "URL",
+    "adding": "Ajout…",
+    "addServerSubmit": "Ajouter le serveur"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "username": "Nom d'utilisateur",
+    "admin": "Admin",
+    "adminCreditsDescription": "Ajustez votre propre solde de crédits partagés.",
+    "apiKeys": "Clés API",
+    "apiKeysDescription": "Utilisez votre propre clé API pour un fournisseur au lieu de la clé partagée par défaut.",
+    "configured": "Configurée",
+    "notConfigured": "Non configurée — utilise la clé partagée par défaut",
+    "replaceKeyPlaceholder": "•••• remplacer la clé",
+    "enterKeyPlaceholder": "Entrez la clé API"
+  },
+  "admin": {
+    "title": "Utilisateurs",
+    "description": "Gérez les comptes utilisateurs et les soldes de crédits partagés.",
+    "adminSuffix": "(admin)",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "credits": "Crédits",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "joined": "Inscrit le"
+  },
+  "assistants": {
+    "title": "Gestion des assistants",
+    "newAssistant": "Nouvel assistant",
+    "editAssistant": "Modifier l'assistant",
+    "empty": "Aucun assistant pour l'instant.",
+    "deleteConfirm": "Supprimer cet assistant ?",
+    "error": "Erreur : {message}",
+    "nameLabel": "Nom",
+    "instructionsLabel": "Instructions",
+    "providerLabel": "Fournisseur",
+    "modelLabel": "Modèle"
+  },
+  "public": {
+    "aboutTitle": "À propos de nous",
+    "contactTitle": "Contactez-nous"
+  },
   "auth": {
     "emailLabel": "Email",
     "forgotPasswordLink": "Mot de passe oublié ?",

@@ -3,12 +3,15 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import type { AdminUser } from '@/types/adminUser';
 
 export default function UsersAdminPage() {
+  const t = useTranslations('admin');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const { user, status } = useAuth();
   const queryClient = useQueryClient();
@@ -61,7 +64,7 @@ export default function UsersAdminPage() {
   }, [status, user, router]);
 
   if (status === 'loading' || (status === 'authenticated' && !user)) {
-    return <p className="p-6 text-gray-500">Loading…</p>;
+    return <p className="p-6 text-gray-500">{tCommon('loading')}</p>;
   }
 
   if (!user?.is_staff) {
@@ -70,20 +73,20 @@ export default function UsersAdminPage() {
 
   return (
     <div className="p-6 space-y-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold">Users</h1>
-      <p className="text-sm text-gray-500">Manage user accounts and shared-key credit balances.</p>
+      <h1 className="text-2xl font-bold">{t('title')}</h1>
+      <p className="text-sm text-gray-500">{t('description')}</p>
 
-      {isLoading && <p className="text-gray-500">Loading…</p>}
+      {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
 
       {users && (
         <table className="w-full border rounded text-sm">
           <thead>
             <tr className="border-b bg-gray-50 text-left">
-              <th className="p-3 font-medium">Username</th>
-              <th className="p-3 font-medium">Email</th>
-              <th className="p-3 font-medium">Credits</th>
-              <th className="p-3 font-medium">Active</th>
-              <th className="p-3 font-medium">Joined</th>
+              <th className="p-3 font-medium">{t('username')}</th>
+              <th className="p-3 font-medium">{t('email')}</th>
+              <th className="p-3 font-medium">{t('credits')}</th>
+              <th className="p-3 font-medium">{t('active')}</th>
+              <th className="p-3 font-medium">{t('joined')}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -91,7 +94,7 @@ export default function UsersAdminPage() {
               <tr key={u.id}>
                 <td className="p-3">
                   {u.username}
-                  {u.is_staff && <span className="ml-2 text-xs text-gray-500">(admin)</span>}
+                  {u.is_staff && <span className="ml-2 text-xs text-gray-500">{t('adminSuffix')}</span>}
                 </td>
                 <td className="p-3 text-gray-500">{u.email || '—'}</td>
                 <td className="p-3">
@@ -110,14 +113,14 @@ export default function UsersAdminPage() {
                         disabled={updateCredits.isPending}
                         className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 disabled:opacity-50"
                       >
-                        Save
+                        {tCommon('save')}
                       </button>
                       <button
                         onClick={() => setEditingId(null)}
                         disabled={updateCredits.isPending}
                         className="px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300"
                       >
-                        Cancel
+                        {tCommon('cancel')}
                       </button>
                     </div>
                   ) : (
@@ -127,7 +130,7 @@ export default function UsersAdminPage() {
                         onClick={() => startEditing(u)}
                         className="text-xs underline text-gray-500 hover:text-ink"
                       >
-                        Edit
+                        {tCommon('edit')}
                       </button>
                     </div>
                   )}
@@ -139,7 +142,7 @@ export default function UsersAdminPage() {
                       checked={u.is_active}
                       onChange={(e) => toggleActive.mutate({ id: u.id, is_active: e.target.checked })}
                     />
-                    <span className="text-gray-500">{u.is_active ? 'Active' : 'Inactive'}</span>
+                    <span className="text-gray-500">{u.is_active ? t('active') : t('inactive')}</span>
                   </label>
                 </td>
                 <td className="p-3 text-gray-500">{new Date(u.date_joined).toLocaleDateString()}</td>

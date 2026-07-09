@@ -4,6 +4,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTranslations } from 'next-intl';
 import ToolConfirmationCard from './ToolConfirmationCard';
 import type { PendingConfirmation } from './useConversationSocket';
 
@@ -37,15 +38,14 @@ function AssistantMessage({ content }: { content: string }) {
   );
 }
 
-const TOOL_LABELS: Record<string, string> = {
-  generate_image: 'Generating image…',
-};
-
 function ActivityIndicator({ status, activeTool }: { status: ChatActivityStatus; activeTool?: string | null }) {
+  const t = useTranslations('conversations');
   const label =
     status === 'tool_call'
-      ? (activeTool && TOOL_LABELS[activeTool]) || `Using tool: ${activeTool}…`
-      : 'Thinking…';
+      ? activeTool === 'generate_image'
+        ? t('generatingImage')
+        : t('usingTool', { tool: activeTool ?? '' })
+      : t('thinking');
   return (
     <div className="flex items-center gap-2 text-gray-500 text-sm">
       <span className="flex gap-1">
@@ -67,6 +67,7 @@ export default function ChatWindow({
   onConfirmTool,
   onCancelTool,
 }: ChatWindowProps) {
+  const t = useTranslations('conversations');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function ChatWindow({
     <div className="flex-1 min-h-0 overflow-y-auto">
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {messages.length === 0 && !streamingText && !showActivityIndicator && !showConfirmationCard ? (
-          <p className="text-gray-500">No messages yet.</p>
+          <p className="text-gray-500">{t('noMessages')}</p>
         ) : (
           <>
             {messages.map((m, idx) =>

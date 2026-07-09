@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +16,9 @@ import ChatWindow from '../ChatWindow';
 import { useSetHeaderContent } from '@/context/HeaderContentContext';
 
 export default function ConversationPage() {
+  const t = useTranslations('conversations');
+  const tProjects = useTranslations('projects');
+  const tCommon = useTranslations('common');
   const params = useParams<{ threadId: string }>();
   const threadId = Number(params.threadId);
   const queryClient = useQueryClient();
@@ -112,7 +116,7 @@ export default function ConversationPage() {
               {thread.project_name}
             </Link>
           ) : (
-            <span className="text-sm text-gray-500 shrink-0">No project</span>
+            <span className="text-sm text-gray-500 shrink-0">{tProjects('noProject')}</span>
           )}
           <span className="text-gray-300 shrink-0">/</span>
           {isEditingTitle ? (
@@ -132,16 +136,16 @@ export default function ConversationPage() {
             <h1
               onClick={startEditingTitle}
               className="text-lg font-semibold cursor-pointer hover:bg-gray-100 rounded px-2 py-0.5 -mx-2 truncate"
-              title="Click to rename"
+              title={t('clickToRename')}
             >
-              {thread?.title || 'Conversation'}
+              {thread?.title || t('fallbackTitle')}
             </h1>
           )}
           <button
             onClick={() => setIsMoveModalOpen(true)}
             className="text-sm underline text-gray-500 hover:text-ink shrink-0"
           >
-            Edit
+            {tCommon('edit')}
           </button>
         </div>
         {thread && (
@@ -154,7 +158,7 @@ export default function ConversationPage() {
         )}
       </div>
     ),
-    [thread, isEditingTitle, titleDraft, saveTitle, startEditingTitle, onProviderModelChange, updateProvider.isPending],
+    [thread, isEditingTitle, titleDraft, saveTitle, startEditingTitle, onProviderModelChange, updateProvider.isPending, t, tProjects, tCommon],
   );
 
   useSetHeaderContent(headerContent);
@@ -185,7 +189,7 @@ export default function ConversationPage() {
           <div className="flex space-x-2">
             <input
               type="text"
-              placeholder="Type your message…"
+              placeholder={t('messagePlaceholder')}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onSend()}
@@ -197,7 +201,7 @@ export default function ConversationPage() {
               disabled={!input.trim() || isBusy}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              Send
+              {t('send')}
             </button>
           </div>
         </div>

@@ -1,6 +1,141 @@
 {
-  "welcome": "Welcome to SparqHub",
-  "dashboard": "Dashboard",
+  "home": {
+    "title": "Welcome to SparqHub",
+    "getStarted": "Get started by navigating:"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "conversations": "Conversations",
+    "projects": "Projects",
+    "settings": "Settings",
+    "users": "Users",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "welcome": "Welcome to your dashboard"
+  },
+  "topbar": {
+    "creditsTitle": "Shared credits remaining",
+    "credits": "{count} credits",
+    "profileAlt": "Profile"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "defaultMessage": "An unexpected error occurred. Try again, or pick something else.",
+    "tryAgain": "Try again",
+    "appErrorMessage": "This page ran into an error. Try again, or pick something else from the sidebar."
+  },
+  "common": {
+    "loading": "Loading…",
+    "delete": "Delete",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saving": "Saving…",
+    "edit": "Edit"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "newChat": "New chat",
+    "deleteConfirm": "Delete this conversation? This cannot be undone.",
+    "empty": "No conversations yet. Start a new chat.",
+    "untitled": "New conversation",
+    "generatingImage": "Generating image…",
+    "usingTool": "Using tool: {tool}…",
+    "thinking": "Thinking…",
+    "noMessages": "No messages yet.",
+    "moveModalTitle": "Move conversation",
+    "moving": "Moving…",
+    "newConversationTitle": "New conversation",
+    "messagePlaceholder": "Type your message…",
+    "send": "Send",
+    "clickToRename": "Click to rename",
+    "fallbackTitle": "Conversation",
+    "delegateToModel": "Delegate to another model",
+    "wantsToUse": "Wants to use: {title}",
+    "connectionFailed": "Could not connect to the chat.",
+    "connectionLost": "Lost connection to the chat."
+  },
+  "projects": {
+    "title": "Projects",
+    "projectLabel": "Project",
+    "noProject": "No project",
+    "namePlaceholder": "Project name…",
+    "descriptionPlaceholder": "Description (optional)…",
+    "newProject": "New project",
+    "empty": "No projects yet.",
+    "threadCount": "{count, plural, one {# conversation} other {# conversations}}",
+    "deleteConfirm": "Delete this project? Its conversations will move to \"No project\", not be deleted.",
+    "fallbackTitle": "Project",
+    "deleteProject": "Delete project",
+    "newChatInProject": "New chat in this project",
+    "emptyThreads": "No conversations in this project yet."
+  },
+  "mcpServers": {
+    "title": "Tool servers (MCP)",
+    "addServerToggle": "+ Add server",
+    "empty": "No tool servers yet. Conversations in this project have no MCP tools.",
+    "enabled": "Enabled",
+    "addError": "Could not add this tool server. Check the fields and try again.",
+    "removeConfirm": "Remove \"{name}\"? Conversations in this project will lose access to its tools.",
+    "nameRequired": "Name is required.",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Local file tools",
+    "transportLabel": "Transport",
+    "stdioOption": "STDIO (local command)",
+    "sseOption": "SSE (remote URL)",
+    "commandLabel": "Command",
+    "argumentsLabel": "Arguments",
+    "urlLabel": "URL",
+    "adding": "Adding…",
+    "addServerSubmit": "Add server"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "username": "Username",
+    "admin": "Admin",
+    "adminCreditsDescription": "Adjust your own shared-key credit balance.",
+    "apiKeys": "API Keys",
+    "apiKeysDescription": "Bring your own API key for a provider to use it instead of the shared default.",
+    "configured": "Configured",
+    "notConfigured": "Not configured — using shared default key",
+    "replaceKeyPlaceholder": "•••• replace key",
+    "enterKeyPlaceholder": "Enter API key"
+  },
+  "admin": {
+    "title": "Users",
+    "description": "Manage user accounts and shared-key credit balances.",
+    "adminSuffix": "(admin)",
+    "username": "Username",
+    "email": "Email",
+    "credits": "Credits",
+    "active": "Active",
+    "inactive": "Inactive",
+    "joined": "Joined"
+  },
+  "assistants": {
+    "title": "Assistant Manager",
+    "newAssistant": "New Assistant",
+    "editAssistant": "Edit Assistant",
+    "empty": "No assistants yet.",
+    "deleteConfirm": "Delete this assistant?",
+    "error": "Error: {message}",
+    "nameLabel": "Name",
+    "instructionsLabel": "Instructions",
+    "providerLabel": "Provider",
+    "modelLabel": "Model"
+  },
+  "public": {
+    "aboutTitle": "About us",
+    "contactTitle": "Contact us"
+  },
   "auth": {
     "emailLabel": "Email",
     "forgotPasswordLink": "Forgot password?",

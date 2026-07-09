@@ -2,10 +2,12 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LogoutButton() {
   const { logout } = useAuth();
+  const t = useTranslations('nav');
 
   const handleLogout = async () => {
     try {
@@ -24,7 +26,7 @@ export default function LogoutButton() {
       className="px-4 py-2 border border-gray-200 text-ink rounded hover:bg-gray-100 transition-colors"
       type="button"
     >
-      Logout
+      {t('logout')}
     </button>
   );
 }
