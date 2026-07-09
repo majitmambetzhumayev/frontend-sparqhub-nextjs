@@ -46,14 +46,23 @@ export default function ConversationPage() {
     setMessages(history.map((m) => ({ sender: m.sender, content: m.content, toolCalls: m.tool_calls })));
   }, [history]);
 
-  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
-    onDone: (fullText, _threadId, toolCalls) => {
-      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
-      void refreshUser();
-    },
-    onError: (message) => setError(message),
-  });
+  const { sendMessage, attachToThread, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } =
+    useConversationSocket({
+      onDone: (fullText, _threadId, toolCalls) => {
+        setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
+        queryClient.invalidateQueries({ queryKey: ['threads'] });
+        void refreshUser();
+      },
+      onError: (message) => setError(message),
+    });
+
+  // Connect eagerly (not just lazily on send) so a generation already in
+  // flight for this thread — e.g. one that survived a previous dropped
+  // connection, or is running from a second tab — is discovered and
+  // resumed rather than only becoming visible after a reload.
+  useEffect(() => {
+    void attachToThread(threadId);
+  }, [threadId, attachToThread]);
 
   const updateProvider = useMutation({
     mutationFn: (payload: { ai_provider: string; model: string }) =>

@@ -14,7 +14,7 @@ export interface ChatWindowMessage {
   toolCalls?: string[];
 }
 
-export type ChatActivityStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
+export type ChatActivityStatus = 'idle' | 'connecting' | 'thinking' | 'resuming' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
 
 export interface ChatWindowProps {
   messages: ChatWindowMessage[];
@@ -60,11 +60,13 @@ function ToolTrace({ toolCalls }: { toolCalls: string[] }) {
 function ActivityIndicator({ status, activeTool }: { status: ChatActivityStatus; activeTool?: string | null }) {
   const t = useTranslations('conversations');
   const label =
-    status === 'tool_call'
-      ? activeTool === 'generate_image'
-        ? t('generatingImage')
-        : t('usingTool', { tool: activeTool ?? '' })
-      : t('thinking');
+    status === 'resuming'
+      ? t('resuming')
+      : status === 'tool_call'
+        ? activeTool === 'generate_image'
+          ? t('generatingImage')
+          : t('usingTool', { tool: activeTool ?? '' })
+        : t('thinking');
   return (
     <div className="flex items-center gap-2 text-gray-500 text-sm">
       <span className="flex gap-1">
@@ -95,7 +97,9 @@ export default function ChatWindow({
   }, [messages, streamingText, status, toolTrace]);
 
   const showActivityIndicator =
-    !streamingText && status !== 'confirm_required' && (status === 'connecting' || status === 'thinking' || status === 'tool_call');
+    !streamingText &&
+    status !== 'confirm_required' &&
+    (status === 'connecting' || status === 'thinking' || status === 'resuming' || status === 'tool_call');
   const showConfirmationCard = status === 'confirm_required' && pendingConfirmation;
 
   return (

@@ -50,6 +50,7 @@
     "usingTool": "Using tool: {tool}…",
     "usedTool": "Used: {tool}",
     "thinking": "Thinking…",
+    "resuming": "Reconnecting to an in-progress response…",
     "noMessages": "No messages yet.",
     "moveModalTitle": "Move conversation",
     "moving": "Moving…",
