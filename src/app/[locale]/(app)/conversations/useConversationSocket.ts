@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
-type SocketStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'resuming' | 'streaming' | 'error';
+type SocketStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'resuming' | 'streaming' | 'delegating' | 'error';
 
 export interface PendingConfirmation {
   tool: string;
@@ -31,7 +31,16 @@ interface ConfirmRequiredStatusFrame {
   arguments: Record<string, unknown>;
   thread_id: number;
 }
-type StatusFrame = ThinkingStatusFrame | ResumingStatusFrame | ToolCallStatusFrame | ConfirmRequiredStatusFrame;
+interface DelegatingStatusFrame {
+  status: 'delegating';
+  provider: string;
+}
+type StatusFrame =
+  | ThinkingStatusFrame
+  | ResumingStatusFrame
+  | ToolCallStatusFrame
+  | ConfirmRequiredStatusFrame
+  | DelegatingStatusFrame;
 interface DoneFrame {
   done: true;
   thread_id: number;
@@ -64,6 +73,7 @@ interface SocketState {
   activeTool: string | null;
   toolTrace: string[];
   pendingConfirmation: PendingConfirmation | null;
+  delegatingProvider: string | null;
 }
 
 const initialState: SocketState = {
@@ -72,6 +82,7 @@ const initialState: SocketState = {
   activeTool: null,
   toolTrace: [],
   pendingConfirmation: null,
+  delegatingProvider: null,
 };
 
 type Action =
@@ -95,6 +106,7 @@ function reducer(state: SocketState, action: Action): SocketState {
         streamingText: state.streamingText + action.chunk,
         activeTool: null,
         pendingConfirmation: null,
+        delegatingProvider: null,
         status: 'streaming',
       };
     case 'status': {
@@ -105,6 +117,7 @@ function reducer(state: SocketState, action: Action): SocketState {
           status: 'tool_call',
           activeTool: frame.tool,
           pendingConfirmation: null,
+          delegatingProvider: null,
           toolTrace: [...state.toolTrace, frame.tool],
         };
       }
@@ -114,17 +127,31 @@ function reducer(state: SocketState, action: Action): SocketState {
           status: 'confirm_required',
           activeTool: frame.tool,
           pendingConfirmation: { tool: frame.tool, arguments: frame.arguments, threadId: frame.thread_id },
+          delegatingProvider: null,
+        };
+      }
+      if (frame.status === 'delegating') {
+        // The delegated call (a fresh LLM round-trip, possibly with its own
+        // tool use like image generation) used to report nothing at all
+        // between confirmation and its own completion — status just sat on
+        // 'thinking' the whole time, indistinguishable from a normal pause.
+        return {
+          ...state,
+          status: 'delegating',
+          activeTool: null,
+          pendingConfirmation: null,
+          delegatingProvider: frame.provider,
         };
       }
       // 'thinking' | 'resuming'
-      return { ...state, status: frame.status, activeTool: null, pendingConfirmation: null };
+      return { ...state, status: frame.status, activeTool: null, pendingConfirmation: null, delegatingProvider: null };
     }
     case 'done':
       return initialState;
     case 'error':
       return { ...initialState, status: 'error' };
     case 'confirmed':
-      return { ...state, status: 'thinking', pendingConfirmation: null };
+      return { ...state, status: 'thinking', pendingConfirmation: null, delegatingProvider: null };
     default:
       return state;
   }
@@ -359,6 +386,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     activeTool: state.activeTool,
     toolTrace: state.toolTrace,
     pendingConfirmation: state.pendingConfirmation,
+    delegatingProvider: state.delegatingProvider,
     close,
   };
 }
