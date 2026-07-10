@@ -12,6 +12,7 @@ export interface ChatWindowMessage {
   sender: 'user' | 'assistant';
   content: string;
   toolCalls?: string[];
+  stopped?: boolean;
 }
 
 export type ChatActivityStatus = 'idle' | 'connecting' | 'thinking' | 'resuming' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
@@ -120,6 +121,7 @@ export default function ChatWindow({
                 <div key={idx} className="space-y-1.5">
                   {m.toolCalls && m.toolCalls.length > 0 && <ToolTrace toolCalls={m.toolCalls} />}
                   <AssistantMessage content={m.content} />
+                  {m.stopped && <p className="text-xs text-gray-400 italic">{t('interrupted')}</p>}
                 </div>
               ),
             )}

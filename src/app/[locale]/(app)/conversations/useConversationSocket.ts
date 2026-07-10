@@ -35,6 +35,7 @@ type StatusFrame = ThinkingStatusFrame | ResumingStatusFrame | ToolCallStatusFra
 interface DoneFrame {
   done: true;
   thread_id: number;
+  stopped?: boolean;
 }
 interface ErrorFrame {
   error: string;
@@ -42,7 +43,7 @@ interface ErrorFrame {
 type ServerFrame = ChunkFrame | StatusFrame | DoneFrame | ErrorFrame;
 
 interface UseConversationSocketOptions {
-  onDone: (fullText: string, threadId: number, toolCalls: string[]) => void;
+  onDone: (fullText: string, threadId: number, toolCalls: string[], stopped: boolean) => void;
   onError: (message: string) => void;
 }
 
@@ -240,7 +241,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
         // id once this frame arrives — capture it so a later drop on this
         // same thread can still reconnect.
         lastThreadIdRef.current = data.thread_id;
-        onDone(stateRef.current.streamingText, data.thread_id, stateRef.current.toolTrace);
+        onDone(stateRef.current.streamingText, data.thread_id, stateRef.current.toolTrace, Boolean(data.stopped));
         dispatch({ type: 'done' });
       } else if ('error' in data) {
         dispatch({ type: 'error' });
@@ -338,10 +339,21 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     socket.send(JSON.stringify({ type: 'tool_confirmation', thread_id: threadId, confirmed }));
   }, []);
 
+  // Cancels an in-flight generation. Whatever was already streamed is kept
+  // (the backend saves partial text on a deliberate stop, same as a normal
+  // completion) — this doesn't discard anything client-side either, it just
+  // asks the server to stop producing more and finalize what exists.
+  const stopGeneration = useCallback((threadId: number) => {
+    const socket = socketRef.current;
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    socket.send(JSON.stringify({ type: 'stop_generation', thread_id: threadId }));
+  }, []);
+
   return {
     sendMessage,
     attachToThread,
     sendConfirmation,
+    stopGeneration,
     status: state.status,
     streamingText: state.streamingText,
     activeTool: state.activeTool,
