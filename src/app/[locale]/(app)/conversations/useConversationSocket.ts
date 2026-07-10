@@ -134,6 +134,8 @@ function wsUrl(): string {
   return `${backendUrl.replace(/^http/, 'ws')}/ws/conversations/`;
 }
 
+const MAX_RECONNECT_DELAY_MS = 15000;
+
 export function useConversationSocket({ onDone, onError }: UseConversationSocketOptions) {
   const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
@@ -145,6 +147,15 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
   // an earlier attempt erroring out fires a spurious "connection failed"
   // even though the surviving socket is healthy.
   const connectingRef = useRef<Promise<WebSocket> | null>(null);
+  // The thread a reconnect should re-attach to, if the connection drops.
+  // Only ever set to a real thread id (never null) — a brand-new thread
+  // being created via sendMessage(null, ...) has nothing to reconnect to
+  // until the 'done' frame delivers its id, at which point it's captured.
+  // Deliberately never used to *resend* the user's message on reconnect —
+  // only to rejoin the thread's group and see whatever's still going.
+  const lastThreadIdRef = useRef<number | null>(null);
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [state, dispatch] = useReducer(reducer, initialState);
   // The one remaining ref: mirrors the latest committed state so that
@@ -158,22 +169,37 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     stateRef.current = state;
   }, [state]);
 
+  const clearScheduledReconnect = useCallback(() => {
+    if (reconnectTimerRef.current !== null) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }, []);
+
   const close = useCallback(() => {
+    clearScheduledReconnect();
+    lastThreadIdRef.current = null;
     socketRef.current?.close();
     socketRef.current = null;
     dispatch({ type: 'reset' });
-  }, []);
+  }, [clearScheduledReconnect]);
 
   useEffect(() => close, [close]);
 
   const openSocket = useCallback(() => {
     return new Promise<WebSocket>((resolve, reject) => {
       const socket = new WebSocket(wsUrl());
-      socket.onopen = () => resolve(socket);
+      socket.onopen = () => {
+        // A live connection again — the backoff schedule (and anything it
+        // already queued) no longer applies.
+        reconnectAttemptRef.current = 0;
+        clearScheduledReconnect();
+        resolve(socket);
+      };
       socket.onerror = () => reject(new Error('WebSocket connection failed'));
       socketRef.current = socket;
     });
-  }, []);
+  }, [clearScheduledReconnect]);
 
   // Shared by sendMessage and attachToThread — both need a live socket with
   // the same frame-handling wired up, they just send a different first
@@ -210,6 +236,10 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
       } else if ('status' in data) {
         dispatch({ type: 'status', status: data });
       } else if ('done' in data) {
+        // A brand-new thread (sendMessage with threadId: null) only gets an
+        // id once this frame arrives — capture it so a later drop on this
+        // same thread can still reconnect.
+        lastThreadIdRef.current = data.thread_id;
         onDone(stateRef.current.streamingText, data.thread_id, stateRef.current.toolTrace);
         dispatch({ type: 'done' });
       } else if ('error' in data) {
@@ -236,6 +266,28 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
       socketRef.current = null;
       dispatch({ type: 'error' });
       onError(t('connectionLost'));
+
+      // Auto-reconnect: a generation can outlive this connection entirely
+      // (see the backend's generation_registry) — losing the socket is no
+      // longer the same as losing the response, so the UI shouldn't just
+      // sit on an error until the user manually reloads. Only re-attaches
+      // (join_thread) to whatever thread was last active; never resends a
+      // message, to avoid double-posting. Exponential backoff, capped, and
+      // reset on the next successful connection (see openSocket's onopen).
+      // ensureSocket is referenced here via the outer `const` binding it's
+      // being assigned to — safe because this closure only runs later, at
+      // which point that binding is fully initialized, not during render.
+      const threadId = lastThreadIdRef.current;
+      if (threadId === null) return;
+      const attempt = reconnectAttemptRef.current;
+      reconnectAttemptRef.current += 1;
+      const delay = Math.min(1000 * 2 ** attempt, MAX_RECONNECT_DELAY_MS);
+      reconnectTimerRef.current = setTimeout(() => {
+        reconnectTimerRef.current = null;
+        void ensureSocket().then((reconnectedSocket) => {
+          reconnectedSocket?.send(JSON.stringify({ type: 'join_thread', thread_id: threadId }));
+        });
+      }, delay);
     };
 
     return socket;
@@ -243,6 +295,9 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
 
   const sendMessage = useCallback(
     async (threadId: number | null, text: string, aiProvider?: string, model?: string, projectId?: number) => {
+      if (threadId !== null) {
+        lastThreadIdRef.current = threadId;
+      }
       dispatch({ type: 'connecting' });
 
       const socket = await ensureSocket();
@@ -267,6 +322,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
   // whatever chunks/frames follow if so, or silently does nothing if not.
   const attachToThread = useCallback(
     async (threadId: number) => {
+      lastThreadIdRef.current = threadId;
       const socket = await ensureSocket();
       if (!socket) return;
       socket.send(JSON.stringify({ type: 'join_thread', thread_id: threadId }));
