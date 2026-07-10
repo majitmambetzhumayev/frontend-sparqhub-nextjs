@@ -75,6 +75,7 @@ export default function ConversationPage() {
     activeTool,
     toolTrace,
     pendingConfirmation,
+    delegatingProvider,
   } = useConversationSocket({ onDone, onError });
 
   // Connect eagerly (not just lazily on send) so a generation already in
@@ -217,6 +218,7 @@ export default function ConversationPage() {
         activeTool={activeTool}
         toolTrace={toolTrace}
         pendingConfirmation={pendingConfirmation}
+        delegatingProvider={delegatingProvider}
         onConfirmTool={() => sendConfirmation(true)}
         onCancelTool={() => sendConfirmation(false)}
       />

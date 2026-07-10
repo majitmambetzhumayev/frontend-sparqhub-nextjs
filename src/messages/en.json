@@ -51,6 +51,8 @@
     "usedTool": "Used: {tool}",
     "thinking": "Thinking…",
     "resuming": "Reconnecting to an in-progress response…",
+    "delegating": "Waiting on {provider}…",
+    "preparingDelegation": "Preparing to delegate…",
     "noMessages": "No messages yet.",
     "moveModalTitle": "Move conversation",
     "moving": "Moving…",

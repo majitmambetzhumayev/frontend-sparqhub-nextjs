@@ -34,10 +34,16 @@ export default function NewConversationPage() {
   );
   const onError = useCallback((message: string) => setError(message), []);
 
-  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
-    onDone,
-    onError,
-  });
+  const {
+    sendMessage,
+    sendConfirmation,
+    status,
+    streamingText,
+    activeTool,
+    toolTrace,
+    pendingConfirmation,
+    delegatingProvider,
+  } = useConversationSocket({ onDone, onError });
 
   const onProviderModelChange = useCallback((nextProvider: string, nextModel: string) => {
     setAiProvider(nextProvider);
@@ -76,6 +82,7 @@ export default function NewConversationPage() {
         activeTool={activeTool}
         toolTrace={toolTrace}
         pendingConfirmation={pendingConfirmation}
+        delegatingProvider={delegatingProvider}
         onConfirmTool={() => sendConfirmation(true)}
         onCancelTool={() => sendConfirmation(false)}
       />

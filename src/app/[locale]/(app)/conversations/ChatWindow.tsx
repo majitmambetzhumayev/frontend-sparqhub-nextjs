@@ -15,7 +15,16 @@ export interface ChatWindowMessage {
   stopped?: boolean;
 }
 
-export type ChatActivityStatus = 'idle' | 'connecting' | 'thinking' | 'resuming' | 'tool_call' | 'confirm_required' | 'streaming' | 'error';
+export type ChatActivityStatus =
+  | 'idle'
+  | 'connecting'
+  | 'thinking'
+  | 'resuming'
+  | 'tool_call'
+  | 'confirm_required'
+  | 'streaming'
+  | 'delegating'
+  | 'error';
 
 export interface ChatWindowProps {
   messages: ChatWindowMessage[];
@@ -24,6 +33,7 @@ export interface ChatWindowProps {
   activeTool?: string | null;
   toolTrace?: string[];
   pendingConfirmation?: PendingConfirmation | null;
+  delegatingProvider?: string | null;
   onConfirmTool?: () => void;
   onCancelTool?: () => void;
 }
@@ -58,16 +68,28 @@ function ToolTrace({ toolCalls }: { toolCalls: string[] }) {
   );
 }
 
-function ActivityIndicator({ status, activeTool }: { status: ChatActivityStatus; activeTool?: string | null }) {
+function ActivityIndicator({
+  status,
+  activeTool,
+  delegatingProvider,
+}: {
+  status: ChatActivityStatus;
+  activeTool?: string | null;
+  delegatingProvider?: string | null;
+}) {
   const t = useTranslations('conversations');
   const label =
     status === 'resuming'
       ? t('resuming')
-      : status === 'tool_call'
-        ? activeTool === 'generate_image'
-          ? t('generatingImage')
-          : t('usingTool', { tool: activeTool ?? '' })
-        : t('thinking');
+      : status === 'delegating'
+        ? t('delegating', { provider: delegatingProvider ?? '' })
+        : status === 'tool_call'
+          ? activeTool === 'generate_image'
+            ? t('generatingImage')
+            : activeTool === 'delegate_to_model'
+              ? t('preparingDelegation')
+              : t('usingTool', { tool: activeTool ?? '' })
+          : t('thinking');
   return (
     <div className="flex items-center gap-2 text-gray-500 text-sm">
       <span className="flex gap-1">
@@ -87,6 +109,7 @@ export default function ChatWindow({
   activeTool,
   toolTrace = [],
   pendingConfirmation,
+  delegatingProvider,
   onConfirmTool,
   onCancelTool,
 }: ChatWindowProps) {
@@ -100,7 +123,11 @@ export default function ChatWindow({
   const showActivityIndicator =
     !streamingText &&
     status !== 'confirm_required' &&
-    (status === 'connecting' || status === 'thinking' || status === 'resuming' || status === 'tool_call');
+    (status === 'connecting' ||
+      status === 'thinking' ||
+      status === 'resuming' ||
+      status === 'tool_call' ||
+      status === 'delegating');
   const showConfirmationCard = status === 'confirm_required' && pendingConfirmation;
 
   return (
@@ -131,7 +158,9 @@ export default function ChatWindow({
                 {streamingText && <AssistantMessage content={streamingText} />}
               </div>
             )}
-            {showActivityIndicator && <ActivityIndicator status={status} activeTool={activeTool} />}
+            {showActivityIndicator && (
+              <ActivityIndicator status={status} activeTool={activeTool} delegatingProvider={delegatingProvider} />
+            )}
             {showConfirmationCard && onConfirmTool && onCancelTool && (
               <ToolConfirmationCard confirmation={pendingConfirmation} onConfirm={onConfirmTool} onCancel={onCancelTool} />
             )}
