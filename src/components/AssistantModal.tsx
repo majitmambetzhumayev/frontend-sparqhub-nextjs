@@ -5,6 +5,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/axios';
+import Modal from '@/components/Modal';
 import type { Assistant, ProvidersResponse } from '@/types/assistant';
 
 export interface AssistantModalProps {
@@ -77,102 +78,98 @@ const AssistantModal: FC<AssistantModalProps> = ({
     setModel(providers?.[nextProvider]?.models[0]?.id ?? '');
   };
 
-  if (!isOpen) return null;
-
   const availableModels = providers?.[aiProvider]?.models ?? [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {assistant ? t('editAssistant') : t('newAssistant')}
-        </h2>
+    <Modal isOpen={isOpen} maxWidthClassName="max-w-lg">
+      <h2 className="text-xl font-semibold mb-4">
+        {assistant ? t('editAssistant') : t('newAssistant')}
+      </h2>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block mb-1 font-medium">{t('nameLabel')}</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              disabled={isSubmitting}
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
+      <div className="space-y-4">
+        <div>
+          <label className="block mb-1 font-medium">{t('nameLabel')}</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            disabled={isSubmitting}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
 
-          <div>
-            <label className="block mb-1 font-medium">{t('instructionsLabel')}</label>
-            <textarea
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              disabled={isSubmitting}
-              className="w-full border rounded px-3 py-2 h-24"
-            />
-          </div>
+        <div>
+          <label className="block mb-1 font-medium">{t('instructionsLabel')}</label>
+          <textarea
+            value={instructions}
+            onChange={(e) => setInstructions(e.target.value)}
+            disabled={isSubmitting}
+            className="w-full border rounded px-3 py-2 h-24"
+          />
+        </div>
 
-          <div>
-            <label className="block mb-1 font-medium">{t('providerLabel')}</label>
-            <select
-              value={aiProvider}
-              onChange={(e) => onProviderChange(e.target.value)}
-              disabled={isSubmitting || !providers}
-              className="w-full border rounded px-3 py-2"
-            >
-              {providers &&
-                Object.entries(providers).map(([key, info]) => (
-                  <option key={key} value={key}>
-                    {info.label}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">{t('modelLabel')}</label>
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              disabled={isSubmitting || availableModels.length === 0}
-              className="w-full border rounded px-3 py-2"
-            >
-              {availableModels.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.label}
+        <div>
+          <label className="block mb-1 font-medium">{t('providerLabel')}</label>
+          <select
+            value={aiProvider}
+            onChange={(e) => onProviderChange(e.target.value)}
+            disabled={isSubmitting || !providers}
+            className="w-full border rounded px-3 py-2"
+          >
+            {providers &&
+              Object.entries(providers).map(([key, info]) => (
+                <option key={key} value={key}>
+                  {info.label}
                 </option>
               ))}
-            </select>
-          </div>
+          </select>
         </div>
 
-        <div className="mt-6 flex justify-end space-x-2">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        <div>
+          <label className="block mb-1 font-medium">{t('modelLabel')}</label>
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            disabled={isSubmitting || availableModels.length === 0}
+            className="w-full border rounded px-3 py-2"
           >
-            {tCommon('cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              onSubmit({
-                id: assistant?.id,
-                name: name.trim(),
-                instructions: instructions.trim(),
-                model,
-                ai_provider: aiProvider,
-              })
-            }
-            disabled={isSubmitting || !name.trim() || !model || !aiProvider}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isSubmitting ? tCommon('saving') : tCommon('save')}
-          </button>
+            {availableModels.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-    </div>
+
+      <div className="mt-6 flex justify-end space-x-2">
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          {tCommon('cancel')}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            onSubmit({
+              id: assistant?.id,
+              name: name.trim(),
+              instructions: instructions.trim(),
+              model,
+              ai_provider: aiProvider,
+            })
+          }
+          disabled={isSubmitting || !name.trim() || !model || !aiProvider}
+          className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 disabled:opacity-50"
+        >
+          {isSubmitting ? tCommon('saving') : tCommon('save')}
+        </button>
+      </div>
+    </Modal>
   );
 };
 

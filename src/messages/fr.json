@@ -21,8 +21,7 @@
   },
   "topbar": {
     "creditsTitle": "Crédits partagés restants",
-    "credits": "{count} crédits",
-    "profileAlt": "Profil"
+    "credits": "{count} crédits"
   },
   "errors": {
     "title": "Une erreur est survenue",
@@ -88,19 +87,20 @@
     "addServerToggle": "+ Ajouter un serveur",
     "empty": "Aucun serveur d'outils pour l'instant. Les conversations de ce projet n'ont accès à aucun outil MCP.",
     "enabled": "Activé",
+    "disabled": "Désactivé",
+    "toggledToast": "{name} : {status}",
     "addError": "Impossible d'ajouter ce serveur d'outils. Vérifiez les champs et réessayez.",
     "removeConfirm": "Retirer \"{name}\" ? Les conversations de ce projet perdront l'accès à ses outils.",
     "nameRequired": "Le nom est requis.",
     "nameLabel": "Nom",
     "namePlaceholder": "ex. Outils fichiers locaux",
-    "transportLabel": "Transport",
-    "stdioOption": "STDIO (commande locale)",
-    "sseOption": "SSE (URL distante)",
-    "commandLabel": "Commande",
-    "argumentsLabel": "Arguments",
     "urlLabel": "URL",
     "adding": "Ajout…",
     "addServerSubmit": "Ajouter le serveur"
+  },
+  "projectFiles": {
+    "title": "Fichiers",
+    "comingSoon": "L'envoi de fichiers arrive bientôt."
   },
   "settings": {
     "title": "Paramètres",

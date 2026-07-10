@@ -21,8 +21,7 @@
   },
   "topbar": {
     "creditsTitle": "Shared credits remaining",
-    "credits": "{count} credits",
-    "profileAlt": "Profile"
+    "credits": "{count} credits"
   },
   "errors": {
     "title": "Something went wrong",
@@ -88,19 +87,20 @@
     "addServerToggle": "+ Add server",
     "empty": "No tool servers yet. Conversations in this project have no MCP tools.",
     "enabled": "Enabled",
+    "disabled": "Disabled",
+    "toggledToast": "{name}: {status}",
     "addError": "Could not add this tool server. Check the fields and try again.",
     "removeConfirm": "Remove \"{name}\"? Conversations in this project will lose access to its tools.",
     "nameRequired": "Name is required.",
     "nameLabel": "Name",
     "namePlaceholder": "e.g. Local file tools",
-    "transportLabel": "Transport",
-    "stdioOption": "STDIO (local command)",
-    "sseOption": "SSE (remote URL)",
-    "commandLabel": "Command",
-    "argumentsLabel": "Arguments",
     "urlLabel": "URL",
     "adding": "Adding…",
     "addServerSubmit": "Add server"
+  },
+  "projectFiles": {
+    "title": "Files",
+    "comingSoon": "File uploads are coming soon."
   },
   "settings": {
     "title": "Settings",
