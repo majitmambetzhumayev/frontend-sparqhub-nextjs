@@ -46,15 +46,25 @@ export default function ConversationPage() {
     setMessages(history.map((m) => ({ sender: m.sender, content: m.content, toolCalls: m.tool_calls })));
   }, [history]);
 
+  // onDone/onError must be stable across renders (useCallback, not inline
+  // closures) — they flow into useConversationSocket's ensureSocket, which
+  // attachToThread depends on, which the eager-attach effect below depends
+  // on. An inline closure gets a new identity every render, which made that
+  // effect re-fire (and re-send join_thread) on every single chunk-driven
+  // re-render during a live response — a real, observed bug: repeated
+  // "resuming" frames fighting the actual streaming status, never settling.
+  const onDone = useCallback(
+    (fullText: string, _threadId: number, toolCalls: string[]) => {
+      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
+      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      void refreshUser();
+    },
+    [queryClient, refreshUser],
+  );
+  const onError = useCallback((message: string) => setError(message), []);
+
   const { sendMessage, attachToThread, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } =
-    useConversationSocket({
-      onDone: (fullText, _threadId, toolCalls) => {
-        setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
-        queryClient.invalidateQueries({ queryKey: ['threads'] });
-        void refreshUser();
-      },
-      onError: (message) => setError(message),
-    });
+    useConversationSocket({ onDone, onError });
 
   // Connect eagerly (not just lazily on send) so a generation already in
   // flight for this thread — e.g. one that survived a previous dropped

@@ -24,13 +24,19 @@ export default function NewConversationPage() {
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
-    onDone: (_fullText, threadId) => {
+  const onDone = useCallback(
+    (_fullText: string, threadId: number) => {
       queryClient.invalidateQueries({ queryKey: ['threads'] });
       void refreshUser();
       router.replace(`/conversations/${threadId}`);
     },
-    onError: (message) => setError(message),
+    [queryClient, refreshUser, router],
+  );
+  const onError = useCallback((message: string) => setError(message), []);
+
+  const { sendMessage, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } = useConversationSocket({
+    onDone,
+    onError,
   });
 
   const onProviderModelChange = useCallback((nextProvider: string, nextModel: string) => {
