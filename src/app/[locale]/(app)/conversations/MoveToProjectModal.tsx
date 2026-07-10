@@ -5,6 +5,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/axios';
+import Modal from '@/components/Modal';
 import type { Project } from '@/types/project';
 
 export interface MoveToProjectModalProps {
@@ -37,48 +38,44 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
     staleTime: 60_000,
   });
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">{t('moveModalTitle')}</h2>
+    <Modal isOpen={isOpen}>
+      <h2 className="text-lg font-semibold mb-4">{t('moveModalTitle')}</h2>
 
-        <label className="block mb-1 font-medium text-sm">{tProjects('projectLabel')}</label>
-        <select
-          value={selected ?? ''}
-          onChange={(e) => setSelected(e.target.value ? Number(e.target.value) : null)}
+      <label className="block mb-1 font-medium text-sm">{tProjects('projectLabel')}</label>
+      <select
+        value={selected ?? ''}
+        onChange={(e) => setSelected(e.target.value ? Number(e.target.value) : null)}
+        disabled={isSubmitting}
+        className="w-full border rounded px-3 py-2 mb-6"
+      >
+        <option value="">{tProjects('noProject')}</option>
+        {projects?.map((project) => (
+          <option key={project.id} value={project.id}>
+            {project.name}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex justify-end space-x-2">
+        <button
+          type="button"
+          onClick={onClose}
           disabled={isSubmitting}
-          className="w-full border rounded px-3 py-2 mb-6"
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
         >
-          <option value="">{tProjects('noProject')}</option>
-          {projects?.map((project) => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-
-        <div className="flex justify-end space-x-2">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-          >
-            {tCommon('cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={() => onConfirm(selected)}
-            disabled={isSubmitting || selected === currentProjectId}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isSubmitting ? t('moving') : tCommon('confirm')}
-          </button>
-        </div>
+          {tCommon('cancel')}
+        </button>
+        <button
+          type="button"
+          onClick={() => onConfirm(selected)}
+          disabled={isSubmitting || selected === currentProjectId}
+          className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 disabled:opacity-50"
+        >
+          {isSubmitting ? t('moving') : tCommon('confirm')}
+        </button>
       </div>
-    </div>
+    </Modal>
   );
 };
 

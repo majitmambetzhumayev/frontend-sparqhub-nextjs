@@ -2,8 +2,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter, useParams } from 'next/navigation';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { useHeaderContentContext } from '@/context/HeaderContentContext';
@@ -15,16 +14,10 @@ const KNOWN_SEGMENTS = ['dashboard', 'conversations', 'projects', 'settings', 'u
 
 export default function ProtectedTopbar() {
   const { user } = useAuth();
-  const router = useRouter();
-  const { locale } = useParams();
   const pathname = usePathname();
   const { headerContent } = useHeaderContentContext();
   const t = useTranslations('nav');
   const tTopbar = useTranslations('topbar');
-
-  const goToProfile = () => {
-    router.push(`/${locale}/settings/profile`);
-  };
 
   const pageTitle = (() => {
     const segments = pathname.split('/').filter(Boolean);
@@ -45,25 +38,12 @@ export default function ProtectedTopbar() {
       </div>
       <div className="flex items-center space-x-4 shrink-0">
         {user && (
-          <>
-            <span
-              className="text-sm font-medium px-3 py-1 rounded-full border border-gray-200 bg-white text-ink"
-              title={tTopbar('creditsTitle')}
-            >
-              {tTopbar('credits', { count: user.credits_remaining })}
-            </span>
-            <span className="text-gray-600 hidden sm:inline">
-              {user.username}
-            </span>
-            <button onClick={goToProfile} className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                src={user.profile_picture ?? '/default-avatar.png'}
-                alt={tTopbar('profileAlt')}
-                fill
-                className="object-cover"
-              />
-            </button>
-          </>
+          <span
+            className="text-sm font-medium px-3 py-1 rounded-full border border-gray-200 bg-white text-ink"
+            title={tTopbar('creditsTitle')}
+          >
+            {tTopbar('credits', { count: user.credits_remaining })}
+          </span>
         )}
       </div>
     </header>

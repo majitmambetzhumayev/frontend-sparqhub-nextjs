@@ -10,6 +10,7 @@ import api from '@/lib/axios';
 import type { Project } from '@/types/project';
 import type { ThreadListItem } from '@/types/thread';
 import McpServersSection from './McpServersSection';
+import FilesSection from './FilesSection';
 
 export default function ProjectDetailPage() {
   const t = useTranslations('projects');
@@ -69,7 +70,7 @@ export default function ProjectDetailPage() {
   }, [deleteProject, t]);
 
   return (
-    <div className="p-6 space-y-4 max-w-2xl mx-auto">
+    <div className="p-6 space-y-4 w-[90%] mx-auto">
       <Link href="/projects" className="text-sm text-gray-500 hover:text-ink">
         ← {t('title')}
       </Link>
@@ -107,30 +108,37 @@ export default function ProjectDetailPage() {
 
       {project?.description && <p className="text-gray-500">{project.description}</p>}
 
-      <Link
-        href={`/conversations/new?project=${projectId}`}
-        className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        {t('newChatInProject')}
-      </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 space-y-4">
+          <Link
+            href={`/conversations/new?project=${projectId}`}
+            className="inline-block px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
+          >
+            {t('newChatInProject')}
+          </Link>
 
-      {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
-      {!isLoading && threads?.length === 0 && <p className="text-gray-500">{t('emptyThreads')}</p>}
+          {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
+          {!isLoading && threads?.length === 0 && <p className="text-gray-500">{t('emptyThreads')}</p>}
 
-      <ul className="divide-y border rounded">
-        {threads?.map((thread) => (
-          <li key={thread.id}>
-            <Link href={`/conversations/${thread.id}`} className="block px-4 py-3 hover:bg-gray-50">
-              <p className="font-medium truncate">{thread.title || tConversations('untitled')}</p>
-              <p className="text-sm text-gray-500">
-                {thread.model} · {new Date(thread.updated_at).toLocaleString()}
-              </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+          <ul className="divide-y border rounded">
+            {threads?.map((thread) => (
+              <li key={thread.id}>
+                <Link href={`/conversations/${thread.id}`} className="block px-4 py-3 hover:bg-gray-50">
+                  <p className="font-medium truncate">{thread.title || tConversations('untitled')}</p>
+                  <p className="text-sm text-gray-500">
+                    {thread.model} · {new Date(thread.updated_at).toLocaleString()}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <McpServersSection projectId={projectId} />
+        <div className="lg:col-span-2 space-y-4">
+          <McpServersSection projectId={projectId} />
+          <FilesSection />
+        </div>
+      </div>
     </div>
   );
 }

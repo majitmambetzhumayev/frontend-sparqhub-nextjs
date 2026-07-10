@@ -6,13 +6,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
-import LogoutButton from './LogoutButton';
+import ProfileMenu from './ProfileMenu';
 
 const navItems = [
   { key: 'dashboard', href: '/dashboard' },
   { key: 'conversations', href: '/conversations' },
   { key: 'projects', href: '/projects' },
-  { key: 'settings', href: '/settings' },
 ] as const;
 
 const adminNavItems = [
@@ -42,7 +41,7 @@ export default function ProtectedSidebar() {
           </Link>
         ))}
       </nav>
-      <LogoutButton/>
+      <ProfileMenu/>
     </aside>
   );
 }
