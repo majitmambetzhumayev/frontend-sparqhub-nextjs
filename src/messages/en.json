@@ -57,6 +57,8 @@
     "newConversationTitle": "New conversation",
     "messagePlaceholder": "Type your message…",
     "send": "Send",
+    "stop": "Stop",
+    "interrupted": "Interrupted",
     "clickToRename": "Click to rename",
     "fallbackTitle": "Conversation",
     "delegateToModel": "Delegate to another model",

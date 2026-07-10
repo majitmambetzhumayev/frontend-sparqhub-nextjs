@@ -24,7 +24,9 @@ export default function ConversationPage() {
   const queryClient = useQueryClient();
   const { refreshUser } = useAuth();
 
-  const [messages, setMessages] = useState<{ sender: 'user' | 'assistant'; content: string; toolCalls?: string[] }[]>([]);
+  const [messages, setMessages] = useState<
+    { sender: 'user' | 'assistant'; content: string; toolCalls?: string[]; stopped?: boolean }[]
+  >([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -54,8 +56,8 @@ export default function ConversationPage() {
   // re-render during a live response — a real, observed bug: repeated
   // "resuming" frames fighting the actual streaming status, never settling.
   const onDone = useCallback(
-    (fullText: string, _threadId: number, toolCalls: string[]) => {
-      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls }]);
+    (fullText: string, _threadId: number, toolCalls: string[], stopped: boolean) => {
+      setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls, stopped }]);
       queryClient.invalidateQueries({ queryKey: ['threads'] });
       void refreshUser();
     },
@@ -63,8 +65,17 @@ export default function ConversationPage() {
   );
   const onError = useCallback((message: string) => setError(message), []);
 
-  const { sendMessage, attachToThread, sendConfirmation, status, streamingText, activeTool, toolTrace, pendingConfirmation } =
-    useConversationSocket({ onDone, onError });
+  const {
+    sendMessage,
+    attachToThread,
+    sendConfirmation,
+    stopGeneration,
+    status,
+    streamingText,
+    activeTool,
+    toolTrace,
+    pendingConfirmation,
+  } = useConversationSocket({ onDone, onError });
 
   // Connect eagerly (not just lazily on send) so a generation already in
   // flight for this thread — e.g. one that survived a previous dropped
@@ -125,6 +136,13 @@ export default function ConversationPage() {
   }, [input, threadId, sendMessage]);
 
   const isBusy = status !== 'idle' && status !== 'error';
+  // Stop is deliberately unavailable during confirm_required — the
+  // confirmation card's own Cancel/Confirm already covers that state, and a
+  // real stop there would need a separate cancellation signal distinct from
+  // task.cancel() (which confirm_tool_call already catches internally to
+  // implement the confirmation timeout, so a plain cancel there would just
+  // be swallowed as "declined" rather than actually stopping the turn).
+  const canStop = status === 'thinking' || status === 'tool_call' || status === 'streaming' || status === 'resuming';
 
   const headerContent = useMemo(
     () => (
@@ -216,13 +234,22 @@ export default function ConversationPage() {
               disabled={isBusy}
               className="flex-1 border rounded px-3 py-2"
             />
-            <button
-              onClick={onSend}
-              disabled={!input.trim() || isBusy}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              {t('send')}
-            </button>
+            {canStop ? (
+              <button
+                onClick={() => stopGeneration(threadId)}
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+              >
+                {t('stop')}
+              </button>
+            ) : (
+              <button
+                onClick={onSend}
+                disabled={!input.trim() || isBusy}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                {t('send')}
+              </button>
+            )}
           </div>
         </div>
       </div>
