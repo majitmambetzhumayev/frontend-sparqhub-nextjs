@@ -54,6 +54,14 @@ function wsUrl(): string {
 export function useConversationSocket({ onDone, onError }: UseConversationSocketOptions) {
   const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
+  // Guards against ensureSocket racing itself: if a connection is already
+  // in flight (e.g. the eager attach-on-mount effect overlaps a user
+  // hitting send before the handshake finishes), every caller awaits this
+  // same promise instead of each opening its own WebSocket. Without it,
+  // socketRef.current gets clobbered by whichever attempt started last, and
+  // an earlier attempt erroring out fires a spurious "connection failed"
+  // even though the surviving socket is healthy.
+  const connectingRef = useRef<Promise<WebSocket> | null>(null);
   const bufferRef = useRef('');
   // Completed tool-call steps for the turn currently in flight, in order —
   // activeTool alone only ever showed the latest one, overwriting the
@@ -100,9 +108,22 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
   // message on it.
   const ensureSocket = useCallback(async (): Promise<WebSocket | null> => {
     let socket = socketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (!socket || socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
+      if (!connectingRef.current) {
+        connectingRef.current = openSocket().finally(() => {
+          connectingRef.current = null;
+        });
+      }
       try {
-        socket = await openSocket();
+        socket = await connectingRef.current;
+      } catch {
+        setStatus('error');
+        onError(t('connectionFailed'));
+        return null;
+      }
+    } else if (socket.readyState === WebSocket.CONNECTING && connectingRef.current) {
+      try {
+        socket = await connectingRef.current;
       } catch {
         setStatus('error');
         onError(t('connectionFailed'));
