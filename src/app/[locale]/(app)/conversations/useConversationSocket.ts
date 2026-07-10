@@ -1,7 +1,7 @@
 // src/app/[locale]/(app)/conversations/useConversationSocket.ts
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
 type SocketStatus = 'idle' | 'connecting' | 'thinking' | 'tool_call' | 'confirm_required' | 'resuming' | 'streaming' | 'error';
@@ -46,6 +46,89 @@ interface UseConversationSocketOptions {
   onError: (message: string) => void;
 }
 
+// Single source of truth for everything a turn's lifecycle touches. Previously
+// each of these five fields was duplicated as a ref (for synchronous reads
+// inside WS event closures) plus a state variable (to trigger re-renders),
+// synced by hand at every one of ~4 call sites — 3 pairs x up to 4 sites was
+// a lot of places for one of the pair to silently drift from the other (that
+// exact class of bug — a status update clearing pendingConfirmation when it
+// shouldn't — already happened once). A reducer's update function always
+// operates on the true latest state regardless of when the calling closure
+// was created, which is what the refs existed to work around in the first
+// place — so collapsing to one dispatch call per frame removes the need for
+// per-field refs entirely, not just the duplication.
+interface SocketState {
+  status: SocketStatus;
+  streamingText: string;
+  activeTool: string | null;
+  toolTrace: string[];
+  pendingConfirmation: PendingConfirmation | null;
+}
+
+const initialState: SocketState = {
+  status: 'idle',
+  streamingText: '',
+  activeTool: null,
+  toolTrace: [],
+  pendingConfirmation: null,
+};
+
+type Action =
+  | { type: 'reset' }
+  | { type: 'connecting' }
+  | { type: 'chunk'; chunk: string }
+  | { type: 'status'; status: StatusFrame }
+  | { type: 'done' }
+  | { type: 'error' }
+  | { type: 'confirmed' };
+
+function reducer(state: SocketState, action: Action): SocketState {
+  switch (action.type) {
+    case 'reset':
+      return initialState;
+    case 'connecting':
+      return { ...initialState, status: 'connecting' };
+    case 'chunk':
+      return {
+        ...state,
+        streamingText: state.streamingText + action.chunk,
+        activeTool: null,
+        pendingConfirmation: null,
+        status: 'streaming',
+      };
+    case 'status': {
+      const frame = action.status;
+      if (frame.status === 'tool_call') {
+        return {
+          ...state,
+          status: 'tool_call',
+          activeTool: frame.tool,
+          pendingConfirmation: null,
+          toolTrace: [...state.toolTrace, frame.tool],
+        };
+      }
+      if (frame.status === 'confirm_required') {
+        return {
+          ...state,
+          status: 'confirm_required',
+          activeTool: frame.tool,
+          pendingConfirmation: { tool: frame.tool, arguments: frame.arguments, threadId: frame.thread_id },
+        };
+      }
+      // 'thinking' | 'resuming'
+      return { ...state, status: frame.status, activeTool: null, pendingConfirmation: null };
+    }
+    case 'done':
+      return initialState;
+    case 'error':
+      return { ...initialState, status: 'error' };
+    case 'confirmed':
+      return { ...state, status: 'thinking', pendingConfirmation: null };
+    default:
+      return state;
+  }
+}
+
 function wsUrl(): string {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? '';
   return `${backendUrl.replace(/^http/, 'ws')}/ws/conversations/`;
@@ -62,34 +145,23 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
   // an earlier attempt erroring out fires a spurious "connection failed"
   // even though the surviving socket is healthy.
   const connectingRef = useRef<Promise<WebSocket> | null>(null);
-  const bufferRef = useRef('');
-  // Completed tool-call steps for the turn currently in flight, in order —
-  // activeTool alone only ever showed the latest one, overwriting the
-  // previous step the moment a new frame arrived. A ref (like bufferRef)
-  // rather than relying solely on the toolTrace state below, so the 'done'
-  // handler reads the up-to-date list rather than a stale closure over it.
-  const toolTraceRef = useRef<string[]>([]);
-  // Same reasoning: sendConfirmation needs the thread_id a confirm_required
-  // frame carried, read reliably rather than through a closure over
-  // possibly-stale state.
-  const pendingConfirmationRef = useRef<PendingConfirmation | null>(null);
-  const [status, setStatus] = useState<SocketStatus>('idle');
-  const [streamingText, setStreamingText] = useState('');
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-  const [toolTrace, setToolTrace] = useState<string[]>([]);
-  const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation | null>(null);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // The one remaining ref: mirrors the latest committed state so that
+  // callbacks with an empty/stable dependency array (sendConfirmation) and
+  // the WS onmessage closure (reassigned only when ensureSocket's own deps
+  // change, not on every frame) can read the true-current turn data — e.g.
+  // the full accumulated text for onDone — without needing to be recreated
+  // every time state changes.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const close = useCallback(() => {
     socketRef.current?.close();
     socketRef.current = null;
-    bufferRef.current = '';
-    toolTraceRef.current = [];
-    pendingConfirmationRef.current = null;
-    setStatus('idle');
-    setStreamingText('');
-    setActiveTool(null);
-    setToolTrace([]);
-    setPendingConfirmation(null);
+    dispatch({ type: 'reset' });
   }, []);
 
   useEffect(() => close, [close]);
@@ -117,7 +189,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
       try {
         socket = await connectingRef.current;
       } catch {
-        setStatus('error');
+        dispatch({ type: 'error' });
         onError(t('connectionFailed'));
         return null;
       }
@@ -125,7 +197,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
       try {
         socket = await connectingRef.current;
       } catch {
-        setStatus('error');
+        dispatch({ type: 'error' });
         onError(t('connectionFailed'));
         return null;
       }
@@ -134,44 +206,20 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     socket.onmessage = (event: MessageEvent<string>) => {
       const data = JSON.parse(event.data) as ServerFrame;
       if ('chunk' in data) {
-        bufferRef.current += data.chunk;
-        setStreamingText(bufferRef.current);
-        setActiveTool(null);
-        setPendingConfirmation(null);
-        setStatus('streaming');
+        dispatch({ type: 'chunk', chunk: data.chunk });
       } else if ('status' in data) {
-        setStatus(data.status);
-        setActiveTool(data.status === 'tool_call' || data.status === 'confirm_required' ? data.tool : null);
-        const confirmation =
-          data.status === 'confirm_required'
-            ? { tool: data.tool, arguments: data.arguments, threadId: data.thread_id }
-            : null;
-        pendingConfirmationRef.current = confirmation;
-        setPendingConfirmation(confirmation);
-        if (data.status === 'tool_call') {
-          toolTraceRef.current = [...toolTraceRef.current, data.tool];
-          setToolTrace(toolTraceRef.current);
-        }
+        dispatch({ type: 'status', status: data });
       } else if ('done' in data) {
-        onDone(bufferRef.current, data.thread_id, toolTraceRef.current);
-        bufferRef.current = '';
-        toolTraceRef.current = [];
-        pendingConfirmationRef.current = null;
-        setStreamingText('');
-        setActiveTool(null);
-        setToolTrace([]);
-        setPendingConfirmation(null);
-        setStatus('idle');
+        onDone(stateRef.current.streamingText, data.thread_id, stateRef.current.toolTrace);
+        dispatch({ type: 'done' });
       } else if ('error' in data) {
-        setStatus('error');
-        pendingConfirmationRef.current = null;
-        setPendingConfirmation(null);
+        dispatch({ type: 'error' });
         onError(data.error);
       }
     };
 
     socket.onerror = () => {
-      setStatus('error');
+      dispatch({ type: 'error' });
       onError(t('connectionLost'));
     };
 
@@ -186,14 +234,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
       // by our own close()/cleanup is a no-op below, not a double-report.
       if (socketRef.current !== socket) return;
       socketRef.current = null;
-      bufferRef.current = '';
-      toolTraceRef.current = [];
-      pendingConfirmationRef.current = null;
-      setStatus('error');
-      setStreamingText('');
-      setActiveTool(null);
-      setToolTrace([]);
-      setPendingConfirmation(null);
+      dispatch({ type: 'error' });
       onError(t('connectionLost'));
     };
 
@@ -202,14 +243,7 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
 
   const sendMessage = useCallback(
     async (threadId: number | null, text: string, aiProvider?: string, model?: string, projectId?: number) => {
-      setStatus('connecting');
-      bufferRef.current = '';
-      toolTraceRef.current = [];
-      pendingConfirmationRef.current = null;
-      setStreamingText('');
-      setActiveTool(null);
-      setToolTrace([]);
-      setPendingConfirmation(null);
+      dispatch({ type: 'connecting' });
 
       const socket = await ensureSocket();
       if (!socket) return;
@@ -242,11 +276,9 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
 
   const sendConfirmation = useCallback((confirmed: boolean) => {
     const socket = socketRef.current;
-    const threadId = pendingConfirmationRef.current?.threadId;
+    const threadId = stateRef.current.pendingConfirmation?.threadId;
     if (!socket || socket.readyState !== WebSocket.OPEN || threadId === undefined) return;
-    pendingConfirmationRef.current = null;
-    setPendingConfirmation(null);
-    setStatus('thinking');
+    dispatch({ type: 'confirmed' });
     socket.send(JSON.stringify({ type: 'tool_confirmation', thread_id: threadId, confirmed }));
   }, []);
 
@@ -254,11 +286,11 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     sendMessage,
     attachToThread,
     sendConfirmation,
-    status,
-    streamingText,
-    activeTool,
-    toolTrace,
-    pendingConfirmation,
+    status: state.status,
+    streamingText: state.streamingText,
+    activeTool: state.activeTool,
+    toolTrace: state.toolTrace,
+    pendingConfirmation: state.pendingConfirmation,
     close,
   };
 }
