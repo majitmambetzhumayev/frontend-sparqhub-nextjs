@@ -136,7 +136,7 @@ export default function ProjectDetailPage() {
 
         <div className="lg:col-span-2 space-y-4">
           <McpServersSection projectId={projectId} />
-          <FilesSection />
+          <FilesSection projectId={projectId} />
         </div>
       </div>
     </div>
