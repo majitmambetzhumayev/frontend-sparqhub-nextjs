@@ -100,7 +100,15 @@
   },
   "projectFiles": {
     "title": "Fichiers",
-    "comingSoon": "L'envoi de fichiers arrive bientôt."
+    "uploadButton": "+ Envoyer des fichiers",
+    "uploading": "Envoi…",
+    "uploaded": "Fichier envoyé",
+    "uploadError": "Impossible d'envoyer ce fichier. Vérifiez la taille et le type et réessayez.",
+    "empty": "Aucun fichier pour l'instant. Envoyez des PDF, notes texte/markdown, documents Word, ou images.",
+    "statusPending": "En attente…",
+    "statusProcessing": "Traitement…",
+    "statusFailed": "Échec",
+    "deleteConfirm": "Supprimer \"{name}\" ?"
   },
   "settings": {
     "title": "Paramètres",

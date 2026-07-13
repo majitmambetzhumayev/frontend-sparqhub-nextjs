@@ -100,7 +100,15 @@
   },
   "projectFiles": {
     "title": "Files",
-    "comingSoon": "File uploads are coming soon."
+    "uploadButton": "+ Upload files",
+    "uploading": "Uploading…",
+    "uploaded": "File uploaded",
+    "uploadError": "Could not upload this file. Check the size and type and try again.",
+    "empty": "No files yet. Upload PDFs, text/markdown notes, Word docs, or images.",
+    "statusPending": "Pending…",
+    "statusProcessing": "Processing…",
+    "statusFailed": "Failed",
+    "deleteConfirm": "Delete \"{name}\"?"
   },
   "settings": {
     "title": "Settings",
