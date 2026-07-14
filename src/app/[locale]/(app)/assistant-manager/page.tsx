@@ -28,6 +28,9 @@ export default function AssistantManagerPage() {
     queryKey: ['assistants'],
     queryFn: () => api.get<Assistant[]>('/api/assistants/').then(r => r.data),
     staleTime: 60_000,
+    // Already renders its own inline error message below — skip the
+    // generic global toast to avoid showing the failure twice.
+    meta: { skipGlobalErrorToast: true },
   });
 
   // 2️⃣ Upsert (create/update) mutation

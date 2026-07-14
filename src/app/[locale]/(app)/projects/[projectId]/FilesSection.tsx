@@ -44,6 +44,8 @@ const FilesSection: FC<FilesSectionProps> = ({ projectId }) => {
       showToast(t('uploaded'));
     },
     onError: () => showToast(t('uploadError')),
+    // Already shows its own contextual toast — skip the generic global one.
+    meta: { skipGlobalErrorToast: true },
   });
 
   const deleteFile = useMutation({

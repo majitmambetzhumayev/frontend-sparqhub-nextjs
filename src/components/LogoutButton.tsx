@@ -3,26 +3,15 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { useAuth } from '@/context/AuthContext';
+import { useLogout } from '@/lib/useLogout';
 
 export default function LogoutButton() {
-  const { logout } = useAuth();
   const t = useTranslations('nav');
-
-  const handleLogout = async () => {
-    try {
-      // logout() already calls POST /api/auth/logout/, clears user/status,
-      // and redirects to the login page — it owns the whole flow.
-      await logout();
-    } catch (error) {
-      console.error('Logout failed', error);
-      // Optionally show a toast or error state here
-    }
-  };
+  const logout = useLogout();
 
   return (
     <button
-      onClick={handleLogout}
+      onClick={logout}
       className="px-4 py-2 border border-gray-200 text-ink rounded hover:bg-gray-100 transition-colors"
       type="button"
     >

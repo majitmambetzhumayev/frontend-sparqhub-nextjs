@@ -14,7 +14,8 @@
     "users": "Utilisateurs",
     "login": "Connexion",
     "register": "Inscription",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "logoutError": "Impossible de se déconnecter. Réessaie."
   },
   "dashboard": {
     "welcome": "Bienvenue sur votre tableau de bord"

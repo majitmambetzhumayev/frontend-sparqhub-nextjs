@@ -37,6 +37,9 @@ const McpServersSection: FC<McpServersSectionProps> = ({ projectId }) => {
       setError(null);
     },
     onError: () => setError(t('addError')),
+    // Already shows its own contextual error in the modal — skip the
+    // generic global toast to avoid showing two error messages at once.
+    meta: { skipGlobalErrorToast: true },
   });
 
   const toggleEnabled = useMutation({

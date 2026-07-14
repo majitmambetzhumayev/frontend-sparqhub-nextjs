@@ -11,13 +11,15 @@ interface ClientProvidersProps {
 }
 
 export default function ClientProviders({ children }: ClientProvidersProps) {
+  // ToastProvider is outermost so RootQueryProvider can show a toast from
+  // its global query/mutation error handler (see RootQueryProvider.tsx).
   return (
-    <RootQueryProvider>
-      <AuthProvider>
-        <ToastProvider>
+    <ToastProvider>
+      <RootQueryProvider>
+        <AuthProvider>
           {children}
-        </ToastProvider>
-      </AuthProvider>
-    </RootQueryProvider>
+        </AuthProvider>
+      </RootQueryProvider>
+    </ToastProvider>
   );
 }
