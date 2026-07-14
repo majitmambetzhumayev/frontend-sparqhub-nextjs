@@ -7,13 +7,15 @@ import { useRouter, useParams } from 'next/navigation';
 import { User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
+import { useLogout } from '@/lib/useLogout';
 
 // Replaces the old standalone LogoutButton at the bottom of the sidebar —
 // same position/role, but now shows the user's identity (photo or a
 // placeholder user icon, plus their name) and expands on click to reveal
 // Settings/Logout, instead of being a single-purpose logout button.
 export default function ProfileMenu() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const logout = useLogout();
   const router = useRouter();
   const { locale } = useParams() as { locale: string };
   const t = useTranslations('nav');
@@ -38,13 +40,7 @@ export default function ProfileMenu() {
 
   const handleLogout = async () => {
     setOpen(false);
-    try {
-      // logout() already calls POST /api/auth/logout/, clears user/status,
-      // and redirects to the login page — it owns the whole flow.
-      await logout();
-    } catch (error) {
-      console.error('Logout failed', error);
-    }
+    await logout();
   };
 
   if (!user) return null;
