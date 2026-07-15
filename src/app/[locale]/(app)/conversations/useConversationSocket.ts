@@ -27,9 +27,18 @@ interface ThinkingStatusFrame {
   status: 'thinking';
   thread_id: number;
 }
+// user_text/streamed_text: nothing is persisted to the DB mid-turn, so this
+// pair is the only record of an in-flight turn's progress — carried on both
+// "resuming" and "confirm_required" (a client can (re)join mid-stream, or
+// mid-stream-then-tool-call) so a client that (re)joins mid-turn (navigated
+// to another thread and back while this one was still generating) sees the
+// question and the answer-so-far instead of neither, until the whole turn
+// eventually finishes and persists.
 interface ResumingStatusFrame {
   status: 'resuming';
   thread_id?: number;
+  user_text?: string;
+  streamed_text?: string;
 }
 interface ToolCallStatusFrame {
   status: 'tool_call';
@@ -41,6 +50,8 @@ interface ConfirmRequiredStatusFrame {
   tool: string;
   arguments: Record<string, unknown>;
   thread_id: number;
+  user_text?: string;
+  streamed_text?: string;
 }
 interface DelegatingStatusFrame {
   status: 'delegating';
@@ -78,6 +89,15 @@ interface UseConversationSocketOptions {
   threadId: number | null;
   onDone: (fullText: string, threadId: number, toolCalls: string[], stopped: boolean) => void;
   onError: (message: string) => void;
+  // Fired at most once per thread-join when a "resuming"/"confirm_required"
+  // frame arrives carrying a non-empty user_text — i.e. only on a genuine
+  // (re)join mid-turn, never on the page that itself just sent the message
+  // (that path never calls join_thread, see the eager-attach effect vs
+  // sendMessage). Lets the caller re-insert the user's message into its own
+  // local message list, which — unlike streamingText, owned by this hook —
+  // this hook has no access to. Optional: /conversations/new never joins an
+  // existing thread, so it has nothing to catch up on.
+  onResumingWithCatchUp?: (userText: string) => void;
 }
 
 // Single source of truth for everything a turn's lifecycle touches. Previously
@@ -152,6 +172,10 @@ function reducer(state: SocketState, action: Action): SocketState {
           activeTool: frame.tool,
           pendingConfirmation: { tool: frame.tool, arguments: frame.arguments, threadId: frame.thread_id },
           delegatingProvider: null,
+          // Authoritative catch-up from the server — always safe to
+          // overwrite (never a duplicate-append concern like the parent's
+          // own message-list is, see onResumingWithCatchUp).
+          streamingText: frame.streamed_text ?? state.streamingText,
         };
       }
       if (frame.status === 'delegating') {
@@ -167,7 +191,17 @@ function reducer(state: SocketState, action: Action): SocketState {
           delegatingProvider: frame.provider,
         };
       }
-      // 'thinking' | 'resuming'
+      if (frame.status === 'resuming') {
+        return {
+          ...state,
+          status: 'resuming',
+          activeTool: null,
+          pendingConfirmation: null,
+          delegatingProvider: null,
+          streamingText: frame.streamed_text ?? state.streamingText,
+        };
+      }
+      // 'thinking'
       return { ...state, status: frame.status, activeTool: null, pendingConfirmation: null, delegatingProvider: null };
     }
     case 'done':
@@ -188,7 +222,12 @@ function wsUrl(): string {
 
 const MAX_RECONNECT_DELAY_MS = 15000;
 
-export function useConversationSocket({ threadId, onDone, onError }: UseConversationSocketOptions) {
+export function useConversationSocket({
+  threadId,
+  onDone,
+  onError,
+  onResumingWithCatchUp,
+}: UseConversationSocketOptions) {
   const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
   // The thread this hook instance is currently bound to, for filtering out
@@ -200,6 +239,17 @@ export function useConversationSocket({ threadId, onDone, onError }: UseConversa
   // while still null (the /conversations/new case — the real id isn't
   // known until the backend assigns it and starts broadcasting).
   const activeThreadIdRef = useRef<number | null>(threadId);
+  // Guards onResumingWithCatchUp against firing more than once per thread
+  // view: a genuine (re)join after navigating away should fire it exactly
+  // once, but a network-blip auto-reconnect on the SAME thread view also
+  // sends join_thread again (see the onclose handler below) — without this,
+  // that second resurfaced frame would re-insert the user's message a
+  // second time into a message list that never actually lost it. Reset
+  // whenever the thread being viewed changes (see the threadId effect
+  // below); never reset on 'done' — a healthy connection that itself sent
+  // the message never calls join_thread for it, so no catch-up is ever
+  // generated for a turn this view started on an unbroken connection.
+  const catchUpConsumedRef = useRef(false);
   // Guards against ensureSocket racing itself: if a connection is already
   // in flight (e.g. the eager attach-on-mount effect overlaps a user
   // hitting send before the handshake finishes), every caller awaits this
@@ -239,6 +289,7 @@ export function useConversationSocket({ threadId, onDone, onError }: UseConversa
   // leaving it visible until the new thread's first frame shows up.
   useEffect(() => {
     activeThreadIdRef.current = threadId;
+    catchUpConsumedRef.current = false;
     dispatch({ type: 'reset' });
   }, [threadId]);
 
@@ -333,6 +384,14 @@ export function useConversationSocket({ threadId, onDone, onError }: UseConversa
       if ('chunk' in data) {
         dispatch({ type: 'chunk', chunk: data.chunk });
       } else if ('status' in data) {
+        if (
+          (data.status === 'resuming' || data.status === 'confirm_required') &&
+          data.user_text &&
+          !catchUpConsumedRef.current
+        ) {
+          catchUpConsumedRef.current = true;
+          onResumingWithCatchUp?.(data.user_text);
+        }
         dispatch({ type: 'status', status: data });
       } else if ('done' in data) {
         // A brand-new thread (sendMessage with threadId: null) only gets an
@@ -390,7 +449,7 @@ export function useConversationSocket({ threadId, onDone, onError }: UseConversa
     };
 
     return socket;
-  }, [openSocket, onDone, onError, t]);
+  }, [openSocket, onDone, onError, onResumingWithCatchUp, t]);
 
   const sendMessage = useCallback(
     async (threadId: number | null, text: string, aiProvider?: string, model?: string, projectId?: number) => {
