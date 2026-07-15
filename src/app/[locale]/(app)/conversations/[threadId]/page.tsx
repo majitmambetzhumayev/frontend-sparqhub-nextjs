@@ -76,7 +76,7 @@ export default function ConversationPage() {
     toolTrace,
     pendingConfirmation,
     delegatingProvider,
-  } = useConversationSocket({ onDone, onError });
+  } = useConversationSocket({ threadId, onDone, onError });
 
   // Connect eagerly (not just lazily on send) so a generation already in
   // flight for this thread — e.g. one that survived a previous dropped

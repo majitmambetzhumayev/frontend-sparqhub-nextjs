@@ -12,18 +12,29 @@ export interface PendingConfirmation {
   threadId: number;
 }
 
+// thread_id rides on every broadcast frame (chunk/status/error) so a
+// connection that's still joined to a previous thread's Channels group
+// (navigation never explicitly leaves it, see the App Router note on
+// useConversationSocket's threadId param below) can be told apart from the
+// thread currently on screen. Absent only on frames that are a direct,
+// synchronous reply to this connection's own last action (never a group
+// broadcast, so never at risk of arriving late for the wrong thread).
 interface ChunkFrame {
   chunk: string;
+  thread_id: number;
 }
 interface ThinkingStatusFrame {
   status: 'thinking';
+  thread_id: number;
 }
 interface ResumingStatusFrame {
   status: 'resuming';
+  thread_id?: number;
 }
 interface ToolCallStatusFrame {
   status: 'tool_call';
   tool: string;
+  thread_id: number;
 }
 interface ConfirmRequiredStatusFrame {
   status: 'confirm_required';
@@ -34,6 +45,7 @@ interface ConfirmRequiredStatusFrame {
 interface DelegatingStatusFrame {
   status: 'delegating';
   provider: string;
+  thread_id: number;
 }
 type StatusFrame =
   | ThinkingStatusFrame
@@ -48,10 +60,22 @@ interface DoneFrame {
 }
 interface ErrorFrame {
   error: string;
+  thread_id?: number;
 }
 type ServerFrame = ChunkFrame | StatusFrame | DoneFrame | ErrorFrame;
 
 interface UseConversationSocketOptions {
+  // The thread currently displayed by the caller — null while a
+  // brand-new thread is still being created (see /conversations/new).
+  // Navigating between /conversations/A and /conversations/B does NOT
+  // remount the page component (both match the same [threadId] route
+  // template), so this hook's own state would otherwise silently keep
+  // showing thread A's in-flight turn under thread B's header. Passing
+  // threadId in lets the hook reset its transient state and start
+  // filtering out any stale frame still arriving from A's Channels group
+  // (this connection is never explicitly removed from a thread's group on
+  // navigation, only on disconnect).
+  threadId: number | null;
   onDone: (fullText: string, threadId: number, toolCalls: string[], stopped: boolean) => void;
   onError: (message: string) => void;
 }
@@ -164,9 +188,18 @@ function wsUrl(): string {
 
 const MAX_RECONNECT_DELAY_MS = 15000;
 
-export function useConversationSocket({ onDone, onError }: UseConversationSocketOptions) {
+export function useConversationSocket({ threadId, onDone, onError }: UseConversationSocketOptions) {
   const t = useTranslations('conversations');
   const socketRef = useRef<WebSocket | null>(null);
+  // The thread this hook instance is currently bound to, for filtering out
+  // stale frames from a previous thread's still-joined group. Starts at
+  // `threadId` itself (not null) so a mount directly onto an existing
+  // thread doesn't briefly accept frames meant for whatever thread this
+  // shared connection was last attached to. Kept in sync with the
+  // `threadId` prop below; also adopted from the first frame received
+  // while still null (the /conversations/new case — the real id isn't
+  // known until the backend assigns it and starts broadcasting).
+  const activeThreadIdRef = useRef<number | null>(threadId);
   // Guards against ensureSocket racing itself: if a connection is already
   // in flight (e.g. the eager attach-on-mount effect overlaps a user
   // hitting send before the handshake finishes), every caller awaits this
@@ -197,6 +230,18 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     stateRef.current = state;
   }, [state]);
 
+  // Fires on mount and on every real thread switch (the [threadId]/page.tsx
+  // case — see UseConversationSocketOptions.threadId). Updating the ref
+  // synchronously here (before any frame for the new thread has arrived)
+  // is what makes onmessage's filter below correct immediately, not just
+  // eventually; dispatching reset clears the previous thread's
+  // streamingText/status/etc. from the screen right away instead of
+  // leaving it visible until the new thread's first frame shows up.
+  useEffect(() => {
+    activeThreadIdRef.current = threadId;
+    dispatch({ type: 'reset' });
+  }, [threadId]);
+
   const clearScheduledReconnect = useCallback(() => {
     if (reconnectTimerRef.current !== null) {
       clearTimeout(reconnectTimerRef.current);
@@ -212,8 +257,20 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
     dispatch({ type: 'reset' });
   }, [clearScheduledReconnect]);
 
-  useEffect(() => close, [close]);
-
+  // Deliberately NOT wired to an unmount effect (no `useEffect(() => close,
+  // [close])` here). That pattern looks idiomatic but is broken under React
+  // Strict Mode's dev-only double-invoke: on the first real mount, Strict
+  // Mode runs this effect's cleanup once as a simulated unmount, which
+  // called close() while ensureSocket()'s connection was still CONNECTING —
+  // aborting it and surfacing a spurious "Could not connect to the chat."
+  // every single time a conversation was opened, with join_thread never
+  // actually reaching the server (so an in-flight generation's "resuming"
+  // state was silently missed too). The socket doesn't need eager cleanup
+  // to be correct: the backend's disconnect() already tears down group
+  // membership independent of how/when the TCP connection actually closes,
+  // and ensureSocket transparently reopens/reuses as needed. `close` stays
+  // available for an explicit future caller (e.g. an intentional
+  // "leave chat" action) — it just isn't auto-invoked on every unmount.
   const openSocket = useCallback(() => {
     return new Promise<WebSocket>((resolve, reject) => {
       const socket = new WebSocket(wsUrl());
@@ -259,6 +316,20 @@ export function useConversationSocket({ onDone, onError }: UseConversationSocket
 
     socket.onmessage = (event: MessageEvent<string>) => {
       const data = JSON.parse(event.data) as ServerFrame;
+      if (typeof data.thread_id === 'number') {
+        if (activeThreadIdRef.current === null) {
+          // Don't know our own thread yet (a brand-new thread being
+          // created) — the first frame to carry an id tells us which one
+          // this connection's send actually created.
+          activeThreadIdRef.current = data.thread_id;
+        } else if (data.thread_id !== activeThreadIdRef.current) {
+          // Broadcast from a thread this page navigated away from — this
+          // connection is still in its Channels group (only disconnect
+          // leaves a group, not a thread switch), but it no longer belongs
+          // on screen.
+          return;
+        }
+      }
       if ('chunk' in data) {
         dispatch({ type: 'chunk', chunk: data.chunk });
       } else if ('status' in data) {
