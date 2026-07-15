@@ -193,7 +193,9 @@
     "oauth": {
       "orDivider": "or",
       "continueWithGoogle": "Continue with Google",
-      "continueWithGithub": "Continue with GitHub"
+      "continueWithGithub": "Continue with GitHub",
+      "errorFailed": "Sign-in was cancelled or failed. Please try again.",
+      "errorNoEmail": "We couldn't get an email address from that provider. Please try a different sign-in method."
     }
   }
 }

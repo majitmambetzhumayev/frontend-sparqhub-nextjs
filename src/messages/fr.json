@@ -193,7 +193,9 @@
     "oauth": {
       "orDivider": "ou",
       "continueWithGoogle": "Continuer avec Google",
-      "continueWithGithub": "Continuer avec GitHub"
+      "continueWithGithub": "Continuer avec GitHub",
+      "errorFailed": "La connexion a été annulée ou a échoué. Réessayez.",
+      "errorNoEmail": "Impossible de récupérer une adresse email depuis ce fournisseur. Essayez une autre méthode de connexion."
     }
   }
 }
