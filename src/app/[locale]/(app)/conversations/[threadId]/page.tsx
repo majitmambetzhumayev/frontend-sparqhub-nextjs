@@ -65,6 +65,16 @@ export default function ConversationPage() {
     [queryClient, refreshUser],
   );
   const onError = useCallback((message: string) => setError(message), []);
+  // Fires only on a genuine (re)join mid-turn (see useConversationSocket's
+  // own guard) — re-inserts the user's own message, lost when this page's
+  // local `messages` got replaced by another thread's history and then by
+  // this thread's own still-stale (turn not yet persisted) history on
+  // return. The assistant's answer-so-far doesn't need the same treatment:
+  // it lives in streamingText, which the hook already seeds itself.
+  const onResumingWithCatchUp = useCallback(
+    (userText: string) => setMessages((prev) => [...prev, { sender: 'user', content: userText }]),
+    [],
+  );
 
   const {
     sendMessage,
@@ -77,7 +87,7 @@ export default function ConversationPage() {
     toolTrace,
     pendingConfirmation,
     delegatingProvider,
-  } = useConversationSocket({ threadId, onDone, onError });
+  } = useConversationSocket({ threadId, onDone, onError, onResumingWithCatchUp });
 
   // Connect eagerly (not just lazily on send) so a generation already in
   // flight for this thread — e.g. one that survived a previous dropped
