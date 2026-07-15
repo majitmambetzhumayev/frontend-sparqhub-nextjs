@@ -43,7 +43,7 @@ export default function NewConversationPage() {
     toolTrace,
     pendingConfirmation,
     delegatingProvider,
-  } = useConversationSocket({ onDone, onError });
+  } = useConversationSocket({ threadId: null, onDone, onError });
 
   const onProviderModelChange = useCallback((nextProvider: string, nextModel: string) => {
     setAiProvider(nextProvider);
