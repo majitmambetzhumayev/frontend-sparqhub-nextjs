@@ -8,11 +8,12 @@ import Modal from '@/components/Modal';
 export interface CreateProjectModalProps {
   isOpen: boolean;
   isSubmitting: boolean;
+  error: string | null;
   onCreate: (name: string, description: string) => void;
   onClose: () => void;
 }
 
-const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, isSubmitting, onCreate, onClose }) => {
+const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, isSubmitting, error, onCreate, onClose }) => {
   const t = useTranslations('projects');
   const tCommon = useTranslations('common');
   const [name, setName] = useState('');
@@ -29,6 +30,7 @@ const CreateProjectModal: FC<CreateProjectModalProps> = ({ isOpen, isSubmitting,
     <Modal isOpen={isOpen}>
       <h2 className="text-lg font-semibold mb-4">{t('newProject')}</h2>
 
+      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
       <input
         type="text"
         autoFocus

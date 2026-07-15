@@ -56,6 +56,7 @@
     "noMessages": "Aucun message pour l'instant.",
     "moveModalTitle": "Déplacer la conversation",
     "moving": "Déplacement…",
+    "moveError": "Impossible de déplacer cette conversation. Réessayez.",
     "newConversationTitle": "Nouvelle conversation",
     "messagePlaceholder": "Écrivez votre message…",
     "send": "Envoyer",
@@ -81,7 +82,8 @@
     "fallbackTitle": "Projet",
     "deleteProject": "Supprimer le projet",
     "newChatInProject": "Nouvelle conversation dans ce projet",
-    "emptyThreads": "Aucune conversation dans ce projet pour l'instant."
+    "emptyThreads": "Aucune conversation dans ce projet pour l'instant.",
+    "createError": "Impossible de créer ce projet. Réessayez."
   },
   "mcpServers": {
     "title": "Serveurs d'outils (MCP)",

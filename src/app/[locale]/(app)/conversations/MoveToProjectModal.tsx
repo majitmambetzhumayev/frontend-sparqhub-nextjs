@@ -12,6 +12,7 @@ export interface MoveToProjectModalProps {
   isOpen: boolean;
   currentProjectId: number | null;
   isSubmitting: boolean;
+  error: string | null;
   onConfirm: (projectId: number | null) => void;
   onClose: () => void;
 }
@@ -20,6 +21,7 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
   isOpen,
   currentProjectId,
   isSubmitting,
+  error,
   onConfirm,
   onClose,
 }) => {
@@ -42,6 +44,7 @@ const MoveToProjectModal: FC<MoveToProjectModalProps> = ({
     <Modal isOpen={isOpen}>
       <h2 className="text-lg font-semibold mb-4">{t('moveModalTitle')}</h2>
 
+      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
       <label className="block mb-1 font-medium text-sm">{tProjects('projectLabel')}</label>
       <select
         value={selected ?? ''}

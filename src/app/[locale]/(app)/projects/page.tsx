@@ -14,6 +14,7 @@ export default function ProjectsPage() {
   const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery<Project[], Error>({
     queryKey: ['projects'],
@@ -25,13 +26,25 @@ export default function ProjectsPage() {
       api.post<Project>('/api/projects/', payload).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      setCreateError(null);
       setIsCreateModalOpen(false);
     },
+    onError: () => setCreateError(t('createError')),
+    // Already shows its own contextual error in the modal — skip the
+    // generic global toast to avoid showing two error messages at once.
+    meta: { skipGlobalErrorToast: true },
   });
 
   const deleteProject = useMutation({
     mutationFn: (id: number) => api.delete(`/api/projects/${id}/`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // A deleted project's threads are detached (SET_NULL), not deleted —
+      // any cached thread view showing this project's id/name (the
+      // conversations list, another project's own thread list) goes stale
+      // otherwise.
+      queryClient.invalidateQueries({ queryKey: ['threads'] });
+    },
   });
 
   const onCreate = useCallback(
@@ -67,8 +80,12 @@ export default function ProjectsPage() {
       <CreateProjectModal
         isOpen={isCreateModalOpen}
         isSubmitting={createProject.isPending}
+        error={createError}
         onCreate={onCreate}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setCreateError(null);
+        }}
       />
 
       {isLoading && <p className="text-gray-500">{tCommon('loading')}</p>}
