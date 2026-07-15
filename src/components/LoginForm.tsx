@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, FormEvent, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { isAxiosError } from 'axios';
@@ -10,14 +10,25 @@ import OAuthButtons from './OAuthButtons';
 
 type LoginFormProps = object;
 
+// OAuthCallbackAPIView redirects failures here as ?error=<code> — read once
+// on mount rather than reactively, since the only way this param changes is
+// a fresh redirect (a full navigation, which remounts this component).
+const OAUTH_ERROR_KEYS: Record<string, string> = {
+  oauth_failed: 'oauth.errorFailed',
+  oauth_no_email: 'oauth.errorNoEmail',
+};
+
 export default function LoginForm({}: LoginFormProps) {
   const { locale } = useParams() as { locale: string };
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const t = useTranslations('auth');
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const oauthErrorCode = searchParams.get('error');
+  const oauthErrorKey = oauthErrorCode ? OAUTH_ERROR_KEYS[oauthErrorCode] : undefined;
+  const [error, setError] = useState<string | null>(oauthErrorKey ? t(oauthErrorKey) : null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = useCallback(
