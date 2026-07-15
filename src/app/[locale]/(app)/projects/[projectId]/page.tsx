@@ -46,6 +46,11 @@ export default function ProjectDetailPage() {
     mutationFn: () => api.delete(`/api/projects/${projectId}/`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // A deleted project's threads are detached (SET_NULL), not deleted —
+      // any cached thread view showing this project's id/name (the
+      // conversations list, another project's own thread list) goes stale
+      // otherwise.
+      queryClient.invalidateQueries({ queryKey: ['threads'] });
       router.push('/projects');
     },
   });

@@ -32,6 +32,7 @@ export default function ConversationPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [moveError, setMoveError] = useState<string | null>(null);
 
   const { data: thread } = useQuery<ThreadDetail, Error>({
     queryKey: ['threads', threadId],
@@ -102,8 +103,13 @@ export default function ConversationPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['threads', threadId] });
       queryClient.invalidateQueries({ queryKey: ['threads'] });
+      setMoveError(null);
       setIsMoveModalOpen(false);
     },
+    onError: () => setMoveError(t('moveError')),
+    // Already shows its own contextual error in the modal — skip the
+    // generic global toast to avoid showing two error messages at once.
+    meta: { skipGlobalErrorToast: true },
   });
 
   const updateTitle = useMutation({
@@ -207,8 +213,12 @@ export default function ConversationPage() {
         isOpen={isMoveModalOpen}
         currentProjectId={thread?.project ?? null}
         isSubmitting={updateProject.isPending}
+        error={moveError}
         onConfirm={(project) => updateProject.mutate(project)}
-        onClose={() => setIsMoveModalOpen(false)}
+        onClose={() => {
+          setIsMoveModalOpen(false);
+          setMoveError(null);
+        }}
       />
 
       <ChatWindow

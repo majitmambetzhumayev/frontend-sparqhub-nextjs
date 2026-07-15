@@ -12,6 +12,7 @@ export interface AssistantModalProps {
   isOpen: boolean;
   assistant: Assistant | null;
   isSubmitting: boolean;
+  error: string | null;
   onSubmit: (data: {
     id?: number;
     name: string;
@@ -26,6 +27,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
   isOpen,
   assistant,
   isSubmitting,
+  error,
   onSubmit,
   onClose,
 }) => {
@@ -86,6 +88,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
         {assistant ? t('editAssistant') : t('newAssistant')}
       </h2>
 
+      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
       <div className="space-y-4">
         <div>
           <label className="block mb-1 font-medium">{t('nameLabel')}</label>

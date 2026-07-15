@@ -17,6 +17,7 @@ export default function AssistantManagerPage() {
   // Modal state
   const [isOpen, setIsOpen] = useState(false);
   const [current, setCurrent] = useState<Assistant | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // 1️⃣ Fetch all assistants
   const {
@@ -51,8 +52,13 @@ export default function AssistantManagerPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assistants'] });
+      setSubmitError(null);
       closeModal();
     },
+    onError: (err) => setSubmitError(t('error', { message: err.message })),
+    // Already shows its own contextual error in the modal — skip the
+    // generic global toast to avoid showing two error messages at once.
+    meta: { skipGlobalErrorToast: true },
   });
 
   // 3️⃣ Delete mutation
@@ -77,6 +83,7 @@ export default function AssistantManagerPage() {
   const closeModal = () => {
     setIsOpen(false);
     setCurrent(null);
+    setSubmitError(null);
   };
 
   const handleSubmit = (data: {
@@ -119,6 +126,7 @@ export default function AssistantManagerPage() {
         isOpen={isOpen}
         assistant={current}
         isSubmitting={isUpserting}
+        error={submitError}
         onSubmit={handleSubmit}
         onClose={closeModal}
       />

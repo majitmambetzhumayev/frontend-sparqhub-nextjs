@@ -56,6 +56,7 @@
     "noMessages": "No messages yet.",
     "moveModalTitle": "Move conversation",
     "moving": "Moving…",
+    "moveError": "Could not move this conversation. Please try again.",
     "newConversationTitle": "New conversation",
     "messagePlaceholder": "Type your message…",
     "send": "Send",
@@ -81,7 +82,8 @@
     "fallbackTitle": "Project",
     "deleteProject": "Delete project",
     "newChatInProject": "New chat in this project",
-    "emptyThreads": "No conversations in this project yet."
+    "emptyThreads": "No conversations in this project yet.",
+    "createError": "Could not create this project. Please try again."
   },
   "mcpServers": {
     "title": "Tool servers (MCP)",
