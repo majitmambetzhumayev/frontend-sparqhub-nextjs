@@ -21,20 +21,17 @@ export default async function HomePage({ params }: HomePageProps) {
   }
 
   const t = await getTranslations({ locale, namespace: 'home' })
-  const tNav = await getTranslations({ locale, namespace: 'nav' })
 
   return (
-    <main className="p-6">
+    <main className="min-h-screen flex flex-col">
       <PublicNavbar />
-      <h1 className="text-3xl font-bold">{t('title')}</h1>
-      <p className="mt-2">{t('getStarted')}</p>
-
-      <div className="mt-4 space-x-4">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink">{t('title')}</h1>
         <Link
           href="/dashboard"
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="mt-10 px-6 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-sm font-medium"
         >
-          {tNav('dashboard')}
+          {t('cta')}
         </Link>
       </div>
     </main>
