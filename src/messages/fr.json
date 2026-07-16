@@ -18,7 +18,14 @@
     "logoutError": "Impossible de se déconnecter. Réessaie."
   },
   "dashboard": {
-    "welcome": "Bienvenue sur votre tableau de bord"
+    "welcome": "Content de vous revoir, {username}",
+    "newConversation": "Nouvelle conversation",
+    "newProject": "Nouveau projet",
+    "inputTokens": "Tokens en entrée",
+    "outputTokens": "Tokens en sortie",
+    "recentConversations": "Conversations récentes",
+    "yourProjects": "Vos projets",
+    "viewAll": "Tout voir"
   },
   "topbar": {
     "creditsTitle": "Crédits partagés restants",
