@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "Welcome to SparqHub",
-    "getStarted": "Get started by navigating:"
+    "title": "Yet another AI project",
+    "cta": "Get started"
   },
   "nav": {
     "home": "Home",
