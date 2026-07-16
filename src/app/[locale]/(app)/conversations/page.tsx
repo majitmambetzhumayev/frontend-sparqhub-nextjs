@@ -35,7 +35,7 @@ export default function ConversationsPage() {
   );
 
   return (
-    <div className="p-6 space-y-4 w-[80%] mx-auto">
+    <div className="p-4 md:p-6 space-y-4 w-full md:w-[80%] mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
         <Link
@@ -59,7 +59,7 @@ export default function ConversationsPage() {
               href={`/conversations/${thread.id}`}
               className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="font-medium truncate">{thread.title || t('untitled')}</p>
                 <p className="text-sm text-gray-500">
                   {thread.model} · {new Date(thread.updated_at).toLocaleString()}

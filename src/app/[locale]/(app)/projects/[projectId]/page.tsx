@@ -75,7 +75,7 @@ export default function ProjectDetailPage() {
   }, [deleteProject, t]);
 
   return (
-    <div className="p-6 space-y-4 w-[90%] mx-auto">
+    <div className="p-4 md:p-6 space-y-4 w-full md:w-[80%] mx-auto">
       <Link href="/projects" className="text-sm text-gray-500 hover:text-ink">
         ← {t('title')}
       </Link>

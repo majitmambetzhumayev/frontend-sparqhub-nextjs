@@ -15,7 +15,9 @@
     "login": "Connexion",
     "register": "Inscription",
     "logout": "Déconnexion",
-    "logoutError": "Impossible de se déconnecter. Réessaie."
+    "logoutError": "Impossible de se déconnecter. Réessaie.",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
   },
   "dashboard": {
     "welcome": "Content de vous revoir, {username}",

@@ -15,7 +15,9 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "logoutError": "Could not log out. Please try again."
+    "logoutError": "Could not log out. Please try again.",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "dashboard": {
     "welcome": "Welcome back, {username}",
