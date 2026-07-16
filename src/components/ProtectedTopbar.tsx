@@ -3,9 +3,11 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useAuth } from '@/context/AuthContext';
 import { useHeaderContentContext } from '@/context/HeaderContentContext';
+import { useMobileMenu } from '@/context/MobileMenuContext';
+import CreditsPill from './CreditsPill';
 
 // Known top-level route segments get a proper translation; anything else
 // (e.g. dynamic sub-paths like /settings/profile) falls back to the
@@ -13,11 +15,10 @@ import { useHeaderContentContext } from '@/context/HeaderContentContext';
 const KNOWN_SEGMENTS = ['dashboard', 'conversations', 'projects', 'settings', 'users'] as const;
 
 export default function ProtectedTopbar() {
-  const { user } = useAuth();
   const pathname = usePathname();
   const { headerContent } = useHeaderContentContext();
+  const { toggle } = useMobileMenu();
   const t = useTranslations('nav');
-  const tTopbar = useTranslations('topbar');
 
   const pageTitle = (() => {
     const segments = pathname.split('/').filter(Boolean);
@@ -32,19 +33,22 @@ export default function ProtectedTopbar() {
   })();
 
   return (
-    <header className="h-16 shrink-0 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
+    <header className="h-16 shrink-0 bg-white border-b border-gray-200 px-4 md:px-6 flex items-center gap-3">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={t('openMenu')}
+        className="md:hidden shrink-0 p-2 -ml-2 text-gray-500 hover:text-ink"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
       <div className="min-w-0 flex-1">
-        {headerContent ?? <h1 className="text-xl font-semibold">{pageTitle}</h1>}
+        {headerContent ?? <h1 className="text-xl font-semibold truncate">{pageTitle}</h1>}
       </div>
-      <div className="flex items-center space-x-4 shrink-0">
-        {user && (
-          <span
-            className="text-sm font-medium px-3 py-1 rounded-full border border-gray-200 bg-white text-ink"
-            title={tTopbar('creditsTitle')}
-          >
-            {tTopbar('credits', { count: user.credits_remaining })}
-          </span>
-        )}
+      {/* On mobile, credits live inside the drawer (ProtectedSidebar)
+          alongside the rest of the sidebar/topbar's static content. */}
+      <div className="hidden md:flex items-center space-x-4 shrink-0">
+        <CreditsPill />
       </div>
     </header>
   );

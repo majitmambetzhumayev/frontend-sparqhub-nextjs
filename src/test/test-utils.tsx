@@ -2,6 +2,7 @@ import React, { ReactElement, ReactNode } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastProvider } from '@/context/ToastContext';
 import enMessages from '@/messages/en.json';
 
 // Real messages (not per-test stubs) so any translation key a component
@@ -21,7 +22,9 @@ function AllProviders({ children }: { children: ReactNode }) {
 
   return (
     <NextIntlClientProvider locale="en" messages={enMessages}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>{children}</ToastProvider>
+      </QueryClientProvider>
     </NextIntlClientProvider>
   );
 }

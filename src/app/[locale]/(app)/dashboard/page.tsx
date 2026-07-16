@@ -41,9 +41,9 @@ export default function DashboardPage() {
   const recentProjects = projects?.slice(0, RECENT_PROJECTS_LIMIT) ?? [];
 
   return (
-    <div className="p-6 space-y-6 w-[90%] mx-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t('welcome', { username: user?.username ?? '' })}</h1>
+    <div className="p-4 md:p-6 space-y-6 w-full md:w-[90%] mx-auto">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <h1 className="text-2xl font-bold truncate">{t('welcome', { username: user?.username ?? '' })}</h1>
         <div className="flex gap-2">
           <Link
             href="/conversations/new"
