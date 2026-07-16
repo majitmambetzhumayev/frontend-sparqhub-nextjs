@@ -65,7 +65,7 @@ export default function ProjectsPage() {
   );
 
   return (
-    <div className="p-6 space-y-4 w-[80%] mx-auto">
+    <div className="p-4 md:p-6 space-y-4 w-full md:w-[80%] mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
         <button
