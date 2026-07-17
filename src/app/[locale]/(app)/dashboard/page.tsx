@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import type { ThreadListItem } from '@/types/thread';
 import type { Project } from '@/types/project';
 import type { UsageSummary } from '@/types/usage';
+import { useOnboardingTour } from './useOnboardingTour';
 
 const RECENT_CONVERSATIONS_LIMIT = 5;
 const RECENT_PROJECTS_LIMIT = 4;
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   const tProjects = useTranslations('projects');
   const tCommon = useTranslations('common');
   const { user } = useAuth();
+  useOnboardingTour();
 
   const { data: threads, isLoading: threadsLoading } = useQuery<ThreadListItem[], Error>({
     queryKey: ['threads'],
@@ -47,6 +49,7 @@ export default function DashboardPage() {
         <div className="flex gap-2">
           <Link
             href="/conversations/new"
+            data-tour="new-conversation"
             className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
           >
             {t('newConversation')}
@@ -60,7 +63,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="border border-gray-200 rounded-lg p-4 flex gap-10">
+      <div data-tour="usage-widget" className="border border-gray-200 rounded-lg p-4 flex gap-10">
         <div>
           <p className="text-sm text-gray-500">{t('inputTokens')}</p>
           <p className="text-2xl font-semibold">{(usage?.input_tokens ?? 0).toLocaleString()}</p>
@@ -76,7 +79,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section>
+        <section data-tour="recent-conversations">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">{t('recentConversations')}</h2>
             <Link href="/conversations" className="text-sm underline text-gray-500 hover:text-ink">
@@ -103,7 +106,7 @@ export default function DashboardPage() {
           </ul>
         </section>
 
-        <section>
+        <section data-tour="projects-section">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">{t('yourProjects')}</h2>
             <Link href="/projects" className="text-sm underline text-gray-500 hover:text-ink">

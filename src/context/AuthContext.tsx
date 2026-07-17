@@ -5,7 +5,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import api from '@/lib/axios'
 
-type User = { id: number; username: string; credits_remaining: number; profile_picture: string | null; is_staff: boolean }
+type User = {
+  id: number
+  username: string
+  credits_remaining: number
+  profile_picture: string | null
+  is_staff: boolean
+  has_seen_onboarding: boolean
+}
 type Status = 'loading'|'authenticated'|'unauthenticated'
 
 interface AuthContextType {

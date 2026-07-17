@@ -27,7 +27,7 @@ vi.mock('@/context/AuthContext', () => ({ useAuth: vi.fn() }));
 describe('protected shell mobile menu (ProtectedTopbar + ProtectedSidebar)', () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue({
-      user: { id: 1, username: 'alice', credits_remaining: 42, profile_picture: null, is_staff: false },
+      user: { id: 1, username: 'alice', credits_remaining: 42, profile_picture: null, is_staff: false, has_seen_onboarding: true },
       status: 'authenticated',
       login: vi.fn(),
       logout: vi.fn(),

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { driver } from 'driver.js';
 import { render, screen, waitFor } from '@/test/test-utils';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
@@ -7,10 +8,17 @@ import type { ThreadListItem } from '@/types/thread';
 import type { Project } from '@/types/project';
 import type { UsageSummary } from '@/types/usage';
 
-vi.mock('@/lib/axios', () => ({ default: { get: vi.fn() } }));
+vi.mock('@/lib/axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 vi.mock('@/context/AuthContext', () => ({ useAuth: vi.fn() }));
+// driver.js manipulates the real DOM outside React's tree -- mocked at the
+// module boundary (like the external SDK calls in provider tests) rather
+// than asserting on its internal DOM output, which isn't this hook's
+// concern to verify.
+vi.mock('driver.js', () => ({
+  driver: vi.fn(() => ({ drive: vi.fn(), destroy: vi.fn() })),
+}));
 
-const mockUser = { id: 1, username: 'alice', credits_remaining: 100, profile_picture: null, is_staff: false };
+const mockUser = { id: 1, username: 'alice', credits_remaining: 100, profile_picture: null, is_staff: false, has_seen_onboarding: true };
 
 const thread: ThreadListItem = {
   id: 7,
@@ -116,5 +124,30 @@ describe('DashboardPage', () => {
       '/conversations/new',
     );
     expect(screen.getByRole('link', { name: 'New project' })).toHaveAttribute('href', '/projects');
+  });
+
+  describe('onboarding tour', () => {
+    it('starts the tour for a user who has not seen it yet', async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        user: { ...mockUser, has_seen_onboarding: false },
+        status: 'authenticated',
+        login: vi.fn(),
+        logout: vi.fn(),
+        refreshUser: vi.fn(),
+      });
+      mockApiGet();
+      render(<DashboardPage />);
+
+      await waitFor(() => expect(driver).toHaveBeenCalled());
+    });
+
+    it('does not start the tour for a user who has already seen it', async () => {
+      // mockUser (from the outer beforeEach) already has has_seen_onboarding: true.
+      mockApiGet();
+      render(<DashboardPage />);
+
+      await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/threads/'));
+      expect(driver).not.toHaveBeenCalled();
+    });
   });
 });
