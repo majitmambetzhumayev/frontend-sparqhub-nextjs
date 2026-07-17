@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import api from '@/lib/axios'
+import api, { SESSION_EXPIRED_EVENT } from '@/lib/axios'
 
 type User = {
   id: number
@@ -46,6 +46,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => { void init() }, [])
+
+  // Fired by lib/axios.ts when a silent refresh attempt itself fails (the
+  // refresh token cookie is gone/expired too) -- the server-side session is
+  // already dead at that point, this just brings client state in sync with
+  // it instead of leaving `status: 'authenticated'` stale while every
+  // subsequent request quietly keeps failing.
+  useEffect(() => {
+    function onSessionExpired() {
+      setUser(null)
+      setStatus('unauthenticated')
+      router.replace(`/${locale}/auth/login`)
+    }
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
+  }, [router, locale])
 
   // refresh the current user (e.g. to reflect credits_remaining after a chat turn)
   async function refreshUser() {
