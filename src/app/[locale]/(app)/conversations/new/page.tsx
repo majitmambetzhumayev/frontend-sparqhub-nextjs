@@ -1,11 +1,12 @@
 // src/app/[locale]/(app)/conversations/new/page.tsx
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import type { Message } from '@/types/thread';
 import { useConversationSocket } from '../useConversationSocket';
 import ProviderModelPicker from '../ProviderModelPicker';
 import ChatWindow, { ChatWindowMessage } from '../ChatWindow';
@@ -23,9 +24,28 @@ export default function NewConversationPage() {
   const [messages, setMessages] = useState<ChatWindowMessage[]>([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  // Captured at send time so onDone can seed the destination thread's
+  // message-list cache with it -- see onDone below for why.
+  const sentTextRef = useRef('');
 
   const onDone = useCallback(
-    (_fullText: string, threadId: number) => {
+    (fullText: string, threadId: number, toolCalls: string[]) => {
+      // router.replace() below unmounts this page (a real navigation, not a
+      // dynamic-segment swap -- /conversations/new and /conversations/[id]
+      // are different route templates). Nothing here ever persisted the
+      // just-streamed reply anywhere the next page reads from, so the new
+      // ConversationPage's own GET /messages/ has to complete before the
+      // reply is visible again -- a real flash of the first response
+      // vanishing then popping back in. Pre-seeding the exact query key it
+      // reads (['threads', threadId, 'messages']) makes that first render
+      // already correct; the background refetch React Query still does on
+      // mount silently reconciles it with the real persisted rows moments
+      // later.
+      const now = new Date().toISOString();
+      queryClient.setQueryData<Message[]>(['threads', threadId, 'messages'], [
+        { id: -2, thread: threadId, sender: 'user', content: sentTextRef.current, timestamp: now, edited: false, read: true, tool_calls: [] },
+        { id: -1, thread: threadId, sender: 'assistant', content: fullText, timestamp: now, edited: false, read: true, tool_calls: toolCalls },
+      ]);
       queryClient.invalidateQueries({ queryKey: ['threads'] });
       void refreshUser();
       router.replace(`/conversations/${threadId}`);
@@ -53,6 +73,7 @@ export default function NewConversationPage() {
   const onSend = useCallback(async () => {
     if (!input.trim()) return;
     const text = input;
+    sentTextRef.current = text;
     setMessages((prev) => [...prev, { sender: 'user', content: text }]);
     setInput('');
     setError(null);

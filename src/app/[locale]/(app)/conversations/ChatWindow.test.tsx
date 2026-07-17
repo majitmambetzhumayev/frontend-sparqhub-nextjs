@@ -38,11 +38,14 @@ describe('ChatWindow', () => {
     expect(screen.getByText('Thinking…')).toBeInTheDocument();
   });
 
-  it('hides the activity indicator once streamed text starts arriving', () => {
+  it('hides the activity indicator once streamed text starts arriving', async () => {
     render(<ChatWindow messages={[]} status="streaming" streamingText="Here is the an" />);
 
     expect(screen.queryByText('Thinking…')).not.toBeInTheDocument();
-    expect(screen.getByText('Here is the an')).toBeInTheDocument();
+    // The typewriter effect (useTypewriter) reveals streamingText
+    // progressively via requestAnimationFrame rather than all at once --
+    // findByText polls until the full text has caught up.
+    expect(await screen.findByText('Here is the an')).toBeInTheDocument();
   });
 
   it('shows which tool is active during a tool call', () => {

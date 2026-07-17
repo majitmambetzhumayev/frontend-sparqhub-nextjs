@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { useTranslations } from 'next-intl';
 import ToolConfirmationCard from './ToolConfirmationCard';
 import type { PendingConfirmation } from './useConversationSocket';
+import { useTypewriter } from './useTypewriter';
 
 export interface ChatWindowMessage {
   sender: 'user' | 'assistant';
@@ -115,10 +116,11 @@ export default function ChatWindow({
 }: ChatWindowProps) {
   const t = useTranslations('conversations');
   const bottomRef = useRef<HTMLDivElement>(null);
+  const displayedStreamingText = useTypewriter(streamingText ?? '');
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: 'end' });
-  }, [messages, streamingText, status, toolTrace]);
+  }, [messages, displayedStreamingText, status, toolTrace]);
 
   const showActivityIndicator =
     !streamingText &&
@@ -155,7 +157,7 @@ export default function ChatWindow({
             {(streamingText || toolTrace.length > 0) && (
               <div className="space-y-1.5">
                 {toolTrace.length > 0 && <ToolTrace toolCalls={toolTrace} />}
-                {streamingText && <AssistantMessage content={streamingText} />}
+                {displayedStreamingText && <AssistantMessage content={displayedStreamingText} />}
               </div>
             )}
             {showActivityIndicator && (
