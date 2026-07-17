@@ -4,8 +4,6 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { routing } from '@/i18n/routing'
 
-export const dynamic = 'force-dynamic'
-
 interface LocaleLayoutProps {
   children: ReactNode
   // Next.js's own generated route types infer `string` for the `[locale]`
