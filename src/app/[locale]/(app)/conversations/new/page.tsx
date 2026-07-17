@@ -46,7 +46,13 @@ export default function NewConversationPage() {
         { id: -2, thread: threadId, sender: 'user', content: sentTextRef.current, timestamp: now, edited: false, read: true, tool_calls: [] },
         { id: -1, thread: threadId, sender: 'assistant', content: fullText, timestamp: now, edited: false, read: true, tool_calls: toolCalls },
       ]);
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      // exact: true -- the unqualified key also prefix-matches (and would
+      // needlessly invalidate) the ['threads', threadId, 'messages'] cache
+      // just seeded above. Not that it matters much here (the destination
+      // page's own useQuery already refetches on mount regardless, per its
+      // default staleTime: 0), but there's no reason for this call to touch
+      // it either.
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
       void refreshUser();
       router.replace(`/conversations/${threadId}`);
     },

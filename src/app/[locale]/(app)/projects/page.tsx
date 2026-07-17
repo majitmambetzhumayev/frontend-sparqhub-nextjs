@@ -25,7 +25,7 @@ export default function ProjectsPage() {
     mutationFn: (payload: { name: string; description: string }) =>
       api.post<Project>('/api/projects/', payload).then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'], exact: true });
       setCreateError(null);
       setIsCreateModalOpen(false);
     },
@@ -38,12 +38,13 @@ export default function ProjectsPage() {
   const deleteProject = useMutation({
     mutationFn: (id: number) => api.delete(`/api/projects/${id}/`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'], exact: true });
       // A deleted project's threads are detached (SET_NULL), not deleted —
       // any cached thread view showing this project's id/name (the
       // conversations list, another project's own thread list) goes stale
-      // otherwise.
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      // otherwise. exact: true -- list-level `project` field only, never a
+      // reason to also touch a specific thread's own sub-queries.
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
     },
   });
 
