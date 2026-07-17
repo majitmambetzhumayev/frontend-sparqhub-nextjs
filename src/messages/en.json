@@ -30,6 +30,43 @@
     "yourProjects": "Your projects",
     "viewAll": "View all"
   },
+  "onboarding": {
+    "next": "Next",
+    "prev": "Back",
+    "done": "Got it",
+    "welcome": {
+      "title": "Welcome to SparqHub",
+      "description": "A quick tour of what you can do here — takes less than a minute."
+    },
+    "chat": {
+      "title": "Chat with any provider",
+      "description": "Start a conversation with Claude, GPT, Mistral, or Gemini — and switch provider or model mid-conversation, not just when you create it."
+    },
+    "memory": {
+      "title": "It remembers you, across conversations",
+      "description": "SparqHub automatically picks up on durable facts you share — preferences, ongoing projects, decisions — and brings the relevant ones into new conversations, so you don't have to repeat yourself. It won't remember everything, just what matters."
+    },
+    "images": {
+      "title": "Image generation, built in",
+      "description": "Just ask — the AI can generate an image directly inside the conversation when it's useful, no separate tool needed."
+    },
+    "delegate": {
+      "title": "The AI can hand off to another model",
+      "description": "Mid-conversation, the assistant can suggest switching to a different provider or model better suited to your question — always with your confirmation first."
+    },
+    "credits": {
+      "title": "Free credits, or bring your own key",
+      "description": "You start with free credits on our shared key. Once they run out, add your own API key in Settings for unlimited use — no credit deductions, ever."
+    },
+    "projects": {
+      "title": "Group conversations into projects",
+      "description": "Keep related conversations together under a project — each project can also connect its own external tools."
+    },
+    "titles": {
+      "title": "Titles, generated and renamable",
+      "description": "Every conversation gets a short AI-generated title after your first message — click it anytime to rename it yourself."
+    }
+  },
   "topbar": {
     "creditsTitle": "Shared credits remaining",
     "credits": "{count} credits"

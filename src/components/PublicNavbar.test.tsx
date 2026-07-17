@@ -52,7 +52,7 @@ describe('PublicNavbar', () => {
   describe('logged in', () => {
     it('shows a dashboard link and a logout button instead of login/register', async () => {
       vi.mocked(useAuth).mockReturnValue({
-        user: { id: 1, username: 'alice', credits_remaining: 100, profile_picture: null, is_staff: false },
+        user: { id: 1, username: 'alice', credits_remaining: 100, profile_picture: null, is_staff: false, has_seen_onboarding: true },
         status: 'authenticated',
         login: vi.fn(),
         logout: vi.fn(),

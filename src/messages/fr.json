@@ -30,6 +30,43 @@
     "yourProjects": "Vos projets",
     "viewAll": "Tout voir"
   },
+  "onboarding": {
+    "next": "Suivant",
+    "prev": "Retour",
+    "done": "Compris",
+    "welcome": {
+      "title": "Bienvenue sur SparqHub",
+      "description": "Un tour rapide de ce que tu peux faire ici — moins d'une minute."
+    },
+    "chat": {
+      "title": "Discute avec n'importe quel provider",
+      "description": "Démarre une conversation avec Claude, GPT, Mistral ou Gemini — et change de provider ou de modèle en cours de route, pas seulement à la création."
+    },
+    "memory": {
+      "title": "Il se souvient de toi, entre les conversations",
+      "description": "SparqHub retient automatiquement certains faits durables que tu partages — préférences, projets en cours, décisions — et les réutilise dans tes nouvelles conversations, pas besoin de te répéter. Il ne retient pas tout, juste ce qui compte."
+    },
+    "images": {
+      "title": "Génération d'images intégrée",
+      "description": "Demande simplement — l'IA peut générer une image directement dans la conversation quand c'est utile, pas besoin d'un outil séparé."
+    },
+    "delegate": {
+      "title": "L'IA peut passer le relais à un autre modèle",
+      "description": "En cours de conversation, l'assistant peut proposer de basculer vers un autre provider ou modèle plus adapté à ta question — toujours avec ta confirmation avant."
+    },
+    "credits": {
+      "title": "Crédits offerts, ou ta propre clé",
+      "description": "Tu démarres avec des crédits offerts sur notre clé partagée. Une fois épuisés, ajoute ta propre clé API dans les Paramètres pour un usage illimité — plus aucune déduction de crédits."
+    },
+    "projects": {
+      "title": "Regroupe tes conversations par projet",
+      "description": "Garde les conversations liées ensemble sous un projet — chaque projet peut aussi connecter ses propres outils externes."
+    },
+    "titles": {
+      "title": "Titres générés et renommables",
+      "description": "Chaque conversation reçoit un titre court généré par l'IA après ton premier message — clique dessus à tout moment pour le renommer toi-même."
+    }
+  },
   "topbar": {
     "creditsTitle": "Crédits partagés restants",
     "credits": "{count} crédits"
