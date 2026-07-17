@@ -120,6 +120,13 @@ export default function LoginForm({}: LoginFormProps) {
         </button>
       </form>
 
+      <p className="mt-4 text-center">
+        {t('login.noAccount')}{' '}
+        <Link href={`/${locale}/auth/register`} className="text-blue-500 hover:underline">
+          {t('login.registerLink')}
+        </Link>
+      </p>
+
       <OAuthButtons />
     </div>
   );

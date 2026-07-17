@@ -237,7 +237,9 @@
       "goToLogin": "Go to login"
     },
     "login": {
-      "emailNotVerified": "Please confirm your email address before logging in."
+      "emailNotVerified": "Please confirm your email address before logging in.",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register here"
     },
     "oauth": {
       "orDivider": "or",

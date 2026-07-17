@@ -237,7 +237,9 @@
       "goToLogin": "Aller à la connexion"
     },
     "login": {
-      "emailNotVerified": "Veuillez confirmer votre adresse email avant de vous connecter."
+      "emailNotVerified": "Veuillez confirmer votre adresse email avant de vous connecter.",
+      "noAccount": "Pas encore de compte ?",
+      "registerLink": "Inscris-toi ici"
     },
     "oauth": {
       "orDivider": "ou",
