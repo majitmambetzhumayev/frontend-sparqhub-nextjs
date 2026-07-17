@@ -31,12 +31,12 @@ const project: Project = {
   updated_at: '2026-07-10T00:00:00Z',
 };
 
-const usage: UsageSummary = { input_tokens: 12345, output_tokens: 6789 };
+const usage: UsageSummary = { input_tokens: 12345, output_tokens: 6789, estimated_cost_usd: 0.1235 };
 
 function mockApiGet({
   threads = [],
   projects = [],
-  usageSummary = { input_tokens: 0, output_tokens: 0 },
+  usageSummary = { input_tokens: 0, output_tokens: 0, estimated_cost_usd: 0 },
 }: {
   threads?: ThreadListItem[];
   projects?: Project[];
@@ -102,6 +102,7 @@ describe('DashboardPage', () => {
 
     expect(await screen.findByText(matchesDigits('12345'))).toBeInTheDocument();
     expect(screen.getByText(matchesDigits('6789'))).toBeInTheDocument();
+    expect(screen.getByText('$0.1235')).toBeInTheDocument();
   });
 
   it('links the quick actions to the right destinations', async () => {

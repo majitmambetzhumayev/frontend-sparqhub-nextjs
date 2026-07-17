@@ -69,6 +69,10 @@ export default function DashboardPage() {
           <p className="text-sm text-gray-500">{t('outputTokens')}</p>
           <p className="text-2xl font-semibold">{(usage?.output_tokens ?? 0).toLocaleString()}</p>
         </div>
+        <div>
+          <p className="text-sm text-gray-500">{t('byokCost')}</p>
+          <p className="text-2xl font-semibold">${(usage?.estimated_cost_usd ?? 0).toFixed(4)}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
