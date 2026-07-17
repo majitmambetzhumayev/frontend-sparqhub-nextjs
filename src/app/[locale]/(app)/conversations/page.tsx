@@ -20,7 +20,7 @@ export default function ConversationsPage() {
 
   const deleteThread = useMutation({
     mutationFn: (id: number) => api.delete(`/api/threads/${id}/`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['threads'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['threads'], exact: true }),
   });
 
   const onDelete = useCallback(

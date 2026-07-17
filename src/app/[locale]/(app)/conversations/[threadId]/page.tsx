@@ -59,7 +59,15 @@ export default function ConversationPage() {
   const onDone = useCallback(
     (fullText: string, _threadId: number, toolCalls: string[], stopped: boolean) => {
       setMessages((prev) => [...prev, { sender: 'assistant', content: fullText, toolCalls, stopped }]);
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      // exact: true -- invalidateQueries prefix-matches by default, so an
+      // unqualified ['threads'] key here also matched (and refetched)
+      // ['threads', threadId, 'messages'], racing a network round-trip
+      // against the setMessages() above -- a real, observed bug: the just-
+      // completed reply flashing away and back once that redundant refetch
+      // resolved. Nothing about this turn changes the conversations list
+      // beyond its own updated_at/title (handled server-side), so this
+      // only ever needed the list query itself, never its descendants.
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
       void refreshUser();
     },
     [queryClient, refreshUser],
@@ -100,7 +108,7 @@ export default function ConversationPage() {
   const updateProvider = useMutation({
     mutationFn: (payload: { ai_provider: string; model: string }) =>
       api.patch<ThreadDetail>(`/api/threads/${threadId}/`, payload).then((r) => r.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['threads', threadId] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['threads', threadId], exact: true }),
   });
 
   const onProviderModelChange = useCallback(
@@ -111,8 +119,8 @@ export default function ConversationPage() {
   const updateProject = useMutation({
     mutationFn: (project: number | null) => api.patch<ThreadDetail>(`/api/threads/${threadId}/`, { project }).then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['threads', threadId] });
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      queryClient.invalidateQueries({ queryKey: ['threads', threadId], exact: true });
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
       setMoveError(null);
       setIsMoveModalOpen(false);
     },
@@ -125,8 +133,8 @@ export default function ConversationPage() {
   const updateTitle = useMutation({
     mutationFn: (title: string) => api.patch<ThreadDetail>(`/api/threads/${threadId}/`, { title }).then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['threads', threadId] });
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      queryClient.invalidateQueries({ queryKey: ['threads', threadId], exact: true });
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
     },
   });
 

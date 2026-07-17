@@ -45,12 +45,14 @@ export default function ProjectDetailPage() {
   const deleteProject = useMutation({
     mutationFn: () => api.delete(`/api/projects/${projectId}/`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'], exact: true });
       // A deleted project's threads are detached (SET_NULL), not deleted —
       // any cached thread view showing this project's id/name (the
       // conversations list, another project's own thread list) goes stale
-      // otherwise.
-      queryClient.invalidateQueries({ queryKey: ['threads'] });
+      // otherwise. exact: true -- this is about the list-level `project`
+      // field on ThreadListItem, never a reason to also touch any specific
+      // thread's own ['threads', id, ...] sub-queries (message history, etc).
+      queryClient.invalidateQueries({ queryKey: ['threads'], exact: true });
       router.push('/projects');
     },
   });
