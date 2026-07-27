@@ -3,6 +3,9 @@
     "title": "Yet another AI project",
     "cta": "Get started"
   },
+  "changelog": {
+    "comingSoon": "Patch notes — coming soon"
+  },
   "nav": {
     "home": "Home",
     "about": "About",
