@@ -12,6 +12,7 @@ interface ChangelogMarqueeProps {
 }
 
 const SCROLL_STEP_PX = 120;
+const MASK_IMAGE = 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)';
 
 export default function ChangelogMarquee({ entries, locale }: ChangelogMarqueeProps) {
   const t = useTranslations('changelog');
@@ -32,7 +33,11 @@ export default function ChangelogMarquee({ entries, locale }: ChangelogMarqueePr
         <ChevronUp className="w-5 h-5" />
       </button>
 
-      <div ref={scrollRef} className="h-64 w-full overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="scrollbar-hide h-64 w-full overflow-y-auto"
+        style={{ maskImage: MASK_IMAGE, WebkitMaskImage: MASK_IMAGE }}
+      >
         <div className="flex flex-col gap-6">
           {entries.map((entry) => (
             <div key={entry.id} className="px-4">

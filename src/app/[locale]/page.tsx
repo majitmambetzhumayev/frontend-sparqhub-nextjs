@@ -45,16 +45,16 @@ export default async function HomePage({ params }: HomePageProps) {
   return (
     <main className="min-h-screen flex flex-col">
       <PublicNavbar />
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink">{t('title')}</h1>
-        <Link
-          href="/dashboard"
-          className="mt-10 px-6 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-sm font-medium"
-        >
-          {t('cta')}
-        </Link>
-      </div>
-      <div className="pb-12 flex items-center justify-center">
+      <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center px-6 py-10">
+        <div>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink">{t('title')}</h1>
+          <Link
+            href="/dashboard"
+            className="mt-10 inline-block px-6 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-sm font-medium"
+          >
+            {t('cta')}
+          </Link>
+        </div>
         {changelogEntries.length > 0 ? (
           <ChangelogMarquee entries={changelogEntries} locale={locale} />
         ) : (
