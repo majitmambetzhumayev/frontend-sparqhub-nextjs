@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useHeaderContentContext } from '@/context/HeaderContentContext';
 import { useMobileMenu } from '@/context/MobileMenuContext';
 import CreditsPill from './CreditsPill';
+import LanguageSwitcher from './LanguageSwitcher';
 
 // Known top-level route segments get a proper translation; anything else
 // (e.g. dynamic sub-paths like /settings/profile) falls back to the
@@ -48,6 +49,7 @@ export default function ProtectedTopbar() {
       {/* On mobile, credits live inside the drawer (ProtectedSidebar)
           alongside the rest of the sidebar/topbar's static content. */}
       <div className="hidden md:flex items-center space-x-4 shrink-0">
+        <LanguageSwitcher />
         <CreditsPill />
       </div>
     </header>

@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 // middleware-driven redirect round-trip on every click.
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/context/AuthContext';
+import LanguageSwitcher from './LanguageSwitcher';
 import LogoutButton from './LogoutButton';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -66,6 +67,9 @@ export default function PublicNavbar() {
                   </li>
                 )
               )}
+              <li>
+                <LanguageSwitcher />
+              </li>
             </ul>
 
             <button
@@ -103,6 +107,9 @@ export default function PublicNavbar() {
               </li>
             )
           )}
+          <li className="py-2">
+            <LanguageSwitcher />
+          </li>
         </ul>
       )}
     </nav>
