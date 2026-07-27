@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { useMobileMenu } from '@/context/MobileMenuContext';
 import CreditsPill from './CreditsPill';
+import LanguageSwitcher from './LanguageSwitcher';
 import ProfileMenu from './ProfileMenu';
 
 const navItems = [
@@ -51,8 +52,9 @@ function SidebarContent({ items, pathname, t, onNavigate, showCredits }: Sidebar
         ))}
       </nav>
       {showCredits && (
-        <div className="px-6 py-3 border-t border-gray-200">
+        <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
           <CreditsPill />
+          <LanguageSwitcher />
         </div>
       )}
       <ProfileMenu />
