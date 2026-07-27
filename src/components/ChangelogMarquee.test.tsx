@@ -30,6 +30,22 @@ describe('ChangelogMarquee', () => {
     expect(screen.queryByRole('button', { name: 'Scroll up' })).not.toBeInTheDocument();
   });
 
+  it('shows the section title', () => {
+    render(<ChangelogMarquee entries={entries} locale="en" />);
+
+    expect(screen.getByRole('heading', { name: 'Patch notes' })).toBeInTheDocument();
+  });
+
+  it('shows a formatted date for each entry', () => {
+    render(<ChangelogMarquee entries={entries} locale="en" />);
+
+    // toLocaleDateString's exact separators/format depend on the runtime's
+    // ICU data -- match on the day-of-month digits only, same reasoning as
+    // the dashboard's token-count assertions.
+    expect(screen.getByText((content) => content.includes('17'))).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes('16'))).toBeInTheDocument();
+  });
+
   it('shows the French fields when locale is fr', () => {
     render(<ChangelogMarquee entries={entries} locale="fr" />);
 

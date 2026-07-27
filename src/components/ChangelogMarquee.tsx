@@ -24,6 +24,8 @@ export default function ChangelogMarquee({ entries, locale }: ChangelogMarqueePr
 
   return (
     <div className="flex flex-col items-center gap-1 w-full max-w-sm">
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">{t('title')}</h2>
+
       <button
         type="button"
         onClick={() => scrollBy(-SCROLL_STEP_PX)}
@@ -38,9 +40,12 @@ export default function ChangelogMarquee({ entries, locale }: ChangelogMarqueePr
         className="scrollbar-hide h-64 w-full overflow-y-auto"
         style={{ maskImage: MASK_IMAGE, WebkitMaskImage: MASK_IMAGE }}
       >
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 pt-6">
           {entries.map((entry) => (
             <div key={entry.id} className="px-4">
+              <p className="text-xs text-gray-400">
+                {new Date(entry.published_at).toLocaleDateString(locale, { day: 'numeric', month: 'short' })}
+              </p>
               <p className="text-sm font-medium text-ink">
                 {locale === 'fr' ? entry.title_fr : entry.title_en}
               </p>
