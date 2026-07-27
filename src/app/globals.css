@@ -4,6 +4,18 @@
 @theme {
   --color-ink: #1f1f1f;
   --color-user-msg: oklch(22% 0.06 155);
+  --animate-marquee-vertical: marquee-vertical 30s linear infinite;
+}
+
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    /* Content is rendered twice back-to-back (see ChangelogMarquee) --
+       translating by exactly half its total height loops seamlessly. */
+    transform: translateY(-50%);
+  }
 }
 
 :root {
