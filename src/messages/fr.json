@@ -3,6 +3,9 @@
     "title": "Encore un projet IA",
     "cta": "Commencer"
   },
+  "changelog": {
+    "comingSoon": "Notes de version — bientôt disponible"
+  },
   "nav": {
     "home": "Accueil",
     "about": "À propos",

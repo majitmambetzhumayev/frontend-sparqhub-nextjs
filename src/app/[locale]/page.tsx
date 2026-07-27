@@ -21,6 +21,7 @@ export default async function HomePage({ params }: HomePageProps) {
   }
 
   const t = await getTranslations({ locale, namespace: 'home' })
+  const tChangelog = await getTranslations({ locale, namespace: 'changelog' })
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -33,6 +34,12 @@ export default async function HomePage({ params }: HomePageProps) {
         >
           {t('cta')}
         </Link>
+      </div>
+      {/* Placeholder for the marquee-style patch notes column planned for
+          this spot -- real content lives in the changelog API/admin,
+          not wired into the UI yet. */}
+      <div className="pb-12 text-center">
+        <p className="text-sm text-gray-400">{tChangelog('comingSoon')}</p>
       </div>
     </main>
   )
