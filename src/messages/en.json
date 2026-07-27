@@ -4,7 +4,9 @@
     "cta": "Get started"
   },
   "changelog": {
-    "comingSoon": "Patch notes — coming soon"
+    "comingSoon": "Patch notes — coming soon",
+    "scrollUp": "Scroll up",
+    "scrollDown": "Scroll down"
   },
   "nav": {
     "home": "Home",

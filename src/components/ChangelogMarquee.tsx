@@ -1,4 +1,9 @@
 // src/components/ChangelogMarquee.tsx
+'use client';
+
+import { useRef } from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ChangelogEntry } from '@/types/changelog';
 
 interface ChangelogMarqueeProps {
@@ -6,33 +11,50 @@ interface ChangelogMarqueeProps {
   locale: string;
 }
 
-// Pure CSS animation (no client JS needed) -- content is duplicated so the
-// -50% translateY keyframe (globals.css) loops seamlessly, and a mask
-// gradient fades entries to transparent at both edges as they scroll in/out
-// ("les plus anciens se fondent dans le blanc").
+const SCROLL_STEP_PX = 120;
+
 export default function ChangelogMarquee({ entries, locale }: ChangelogMarqueeProps) {
+  const t = useTranslations('changelog');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   if (entries.length === 0) return null;
 
-  const looped = [...entries, ...entries];
-  const maskImage = 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)';
+  const scrollBy = (delta: number) => scrollRef.current?.scrollBy({ top: delta, behavior: 'smooth' });
 
   return (
-    <div
-      className="h-72 w-full max-w-sm overflow-hidden"
-      style={{ maskImage, WebkitMaskImage: maskImage }}
-    >
-      <div className="animate-marquee-vertical flex flex-col gap-6">
-        {looped.map((entry, idx) => (
-          <div key={`${entry.id}-${idx}`} className="px-4">
-            <p className="text-sm font-medium text-ink">
-              {locale === 'fr' ? entry.title_fr : entry.title_en}
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {locale === 'fr' ? entry.description_fr : entry.description_en}
-            </p>
-          </div>
-        ))}
+    <div className="flex flex-col items-center gap-1 w-full max-w-sm">
+      <button
+        type="button"
+        onClick={() => scrollBy(-SCROLL_STEP_PX)}
+        aria-label={t('scrollUp')}
+        className="text-gray-400 hover:text-ink"
+      >
+        <ChevronUp className="w-5 h-5" />
+      </button>
+
+      <div ref={scrollRef} className="h-64 w-full overflow-y-auto">
+        <div className="flex flex-col gap-6">
+          {entries.map((entry) => (
+            <div key={entry.id} className="px-4">
+              <p className="text-sm font-medium text-ink">
+                {locale === 'fr' ? entry.title_fr : entry.title_en}
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {locale === 'fr' ? entry.description_fr : entry.description_en}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => scrollBy(SCROLL_STEP_PX)}
+        aria-label={t('scrollDown')}
+        className="text-gray-400 hover:text-ink"
+      >
+        <ChevronDown className="w-5 h-5" />
+      </button>
     </div>
   );
 }

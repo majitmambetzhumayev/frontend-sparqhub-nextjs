@@ -4,7 +4,9 @@
     "cta": "Commencer"
   },
   "changelog": {
-    "comingSoon": "Notes de version — bientôt disponible"
+    "comingSoon": "Notes de version — bientôt disponible",
+    "scrollUp": "Défiler vers le haut",
+    "scrollDown": "Défiler vers le bas"
   },
   "nav": {
     "home": "Accueil",

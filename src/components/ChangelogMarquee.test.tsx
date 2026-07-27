@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
 import { render, screen } from '@/test/test-utils';
 import ChangelogMarquee from './ChangelogMarquee';
 import type { ChangelogEntry } from '@/types/changelog';
@@ -24,32 +25,38 @@ const entries: ChangelogEntry[] = [
 
 describe('ChangelogMarquee', () => {
   it('renders nothing when there are no entries', () => {
-    // AllProviders always renders a (currently empty) toast portal, so the
-    // container itself isn't literally empty -- assert on the marquee's
-    // own wrapper being absent instead.
-    const { container } = render(<ChangelogMarquee entries={[]} locale="en" />);
+    render(<ChangelogMarquee entries={[]} locale="en" />);
 
-    expect(container.querySelector('.animate-marquee-vertical')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Scroll up' })).not.toBeInTheDocument();
   });
 
   it('shows the French fields when locale is fr', () => {
     render(<ChangelogMarquee entries={entries} locale="fr" />);
 
-    expect(screen.getAllByText('Titre un').length).toBeGreaterThan(0);
+    expect(screen.getByText('Titre un')).toBeInTheDocument();
     expect(screen.queryByText('Title one')).not.toBeInTheDocument();
   });
 
   it('shows the English fields when locale is en', () => {
     render(<ChangelogMarquee entries={entries} locale="en" />);
 
-    expect(screen.getAllByText('Title one').length).toBeGreaterThan(0);
+    expect(screen.getByText('Title one')).toBeInTheDocument();
     expect(screen.queryByText('Titre un')).not.toBeInTheDocument();
   });
 
-  it('duplicates the entries so the loop animation has a seamless second half', () => {
+  it('scrolls the list down and up when the chevron buttons are clicked', async () => {
+    const user = userEvent.setup();
     render(<ChangelogMarquee entries={entries} locale="en" />);
+    // jsdom doesn't implement scrollBy at all -- stubbed so clicking the
+    // buttons doesn't throw; this test only asserts the buttons wire up to
+    // it, not real scroll physics.
+    const scrollBySpy = vi.fn();
+    Element.prototype.scrollBy = scrollBySpy;
 
-    expect(screen.getAllByText('Title one')).toHaveLength(2);
-    expect(screen.getAllByText('Title two')).toHaveLength(2);
+    await user.click(screen.getByRole('button', { name: 'Scroll down' }));
+    await user.click(screen.getByRole('button', { name: 'Scroll up' }));
+
+    expect(scrollBySpy).toHaveBeenNthCalledWith(1, { top: 120, behavior: 'smooth' });
+    expect(scrollBySpy).toHaveBeenNthCalledWith(2, { top: -120, behavior: 'smooth' });
   });
 });
