@@ -37,7 +37,7 @@ export default function PublicNavbar() {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="bg-white border-b shadow-sm sticky top-0 z-50">
+    <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="text-xl font-bold text-ink">
           SparqHub

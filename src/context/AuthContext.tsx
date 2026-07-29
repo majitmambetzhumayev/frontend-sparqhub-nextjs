@@ -52,11 +52,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // already dead at that point, this just brings client state in sync with
   // it instead of leaving `status: 'authenticated'` stale while every
   // subsequent request quietly keeps failing.
+  //
+  // Only redirect if there was actually a live session to lose: init()'s own
+  // `/api/auth/me/` call 401s (then fails its silent-refresh retry) for
+  // every anonymous visitor too -- e.g. landing on the public homepage with
+  // no cookies at all -- and that must NOT bounce them to /login, since
+  // public pages don't require auth. `status` is read via a ref rather than
+  // added to this effect's deps, so the listener doesn't need to be torn
+  // down/re-added on every status change.
+  const statusRef = React.useRef(status)
+  statusRef.current = status
+
   useEffect(() => {
     function onSessionExpired() {
       setUser(null)
       setStatus('unauthenticated')
-      router.replace(`/${locale}/auth/login`)
+      if (statusRef.current === 'authenticated') {
+        router.replace(`/${locale}/auth/login`)
+      }
     }
     window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired)
