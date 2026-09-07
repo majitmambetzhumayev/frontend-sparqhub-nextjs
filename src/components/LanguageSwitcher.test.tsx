@@ -17,19 +17,42 @@ vi.mock('@/i18n/navigation', () => ({
 }));
 
 describe('LanguageSwitcher', () => {
-  it('marks the current locale (en, from the test provider) as active and not clickable', () => {
+  it('shows the current locale on the trigger and keeps the menu closed', () => {
     render(<LanguageSwitcher />);
 
-    expect(screen.getByRole('button', { name: 'EN' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'FR' })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /en/i })).toBeInTheDocument();
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
-  it('switches to the other locale, staying on the same path', async () => {
+  it('opens on click and marks the current locale as selected', async () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
-    await user.click(screen.getByRole('button', { name: 'FR' }));
+    await user.click(screen.getByRole('button', { name: /en/i }));
+
+    expect(screen.getByRole('option', { name: /english/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('option', { name: /français/i })).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('switches to the other locale, staying on the same path, and closes the menu', async () => {
+    const user = userEvent.setup();
+    render(<LanguageSwitcher />);
+
+    await user.click(screen.getByRole('button', { name: /en/i }));
+    await user.click(screen.getByRole('option', { name: /français/i }));
 
     expect(mockReplace).toHaveBeenCalledWith('/dashboard', { locale: 'fr' });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('closes without switching when the current locale is clicked again', async () => {
+    const user = userEvent.setup();
+    render(<LanguageSwitcher />);
+
+    await user.click(screen.getByRole('button', { name: /en/i }));
+    await user.click(screen.getByRole('option', { name: /english/i }));
+
+    expect(mockReplace).not.toHaveBeenCalled();
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });
