@@ -31,8 +31,12 @@ doesn't have to re-derive the reasoning — read them, don't strip them.
 - `src/lib/` — pure functions/hooks (axios client, `useLogout`,
   `useReportError`). This is the layer most worth unit-testing.
 - `src/i18n/` + `src/messages/` — `next-intl` routing/config + `en.json`/
-  `fr.json`. Scaffolding is in place but strings aren't actually translated
-  yet — deliberate, not an oversight (revisit once the UI stops churning).
+  `fr.json`, both genuinely translated (194 keys, only 11 legitimately
+  identical between languages — see REVIEW.md). `src/i18n/request.ts` must
+  `await requestLocale` before checking it against `routing.locales` —
+  it's a `Promise` in next-intl 4.x, and passing it unawaited into
+  `hasLocale()` silently makes every request resolve to `defaultLocale`
+  (this broke server-side locale resolution entirely until 2026-09-07).
 
 ## Testing
 

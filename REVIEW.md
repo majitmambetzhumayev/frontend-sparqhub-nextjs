@@ -60,8 +60,20 @@ Legend: ✅ verified · ⚠️ partially verified / known gap · ❌ not verifie
 
 ## Known non-blocking gaps
 
-- i18n: `next-intl` scaffolding present, no strings actually translated
-  (explicit decision, not an oversight — revisit once the UI stops churning).
+- ✅ **Fixed (2026-09-07): `src/i18n/request.ts` always rendered English,
+  regardless of the `/en` or `/fr` URL segment.** `requestLocale` is a
+  `Promise<string | undefined>` (next-intl 4.x), but was passed unawaited
+  into `hasLocale()` — comparing a Promise object against `routing.locales`
+  never matches, so every request silently fell back to `defaultLocale`.
+  This wasn't "strings not translated yet" as previously noted here —
+  `home.title`/`home.cta` (and likely other already-translated namespaces)
+  were real, different, correct strings in `fr.json` that server components
+  could just never reach. `LanguageSwitcher.tsx` was also redesigned
+  (dropdown + flags, was a bare "EN · FR" text toggle) while investigating
+  this. Checked all namespaces once reachable: 194 keys total, only 11
+  identical between `en.json`/`fr.json` — all legitimate (e.g. "Contact",
+  "Email", "URL", "Admin" are spelled the same in French). Translation
+  coverage is actually in good shape; the old note above undersold it.
 - No React error boundaries — an unexpected render error anywhere still takes
   down the whole page rather than degrading gracefully.
 - No automated frontend tests of any kind. If this project matures past MVP,
