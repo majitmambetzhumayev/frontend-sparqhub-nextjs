@@ -45,7 +45,7 @@ export default function PublicNavbar() {
     // continuous block; on the plain white about/contact/auth pages it's
     // just a green bar. No scroll-based color switching needed either way.
     <nav className="bg-forest-900 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-4 pt-8 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/media/logos/sparqup-dark.svg"
