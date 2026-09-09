@@ -5,7 +5,7 @@ import { Fraunces, Inter } from 'next/font/google'
 import ClientProviders from '@/components/ClientProviders'
 
 // Same brand as the sparqup.fr marketing site: Fraunces (serif) for
-// headings, Inter for body text — see globals.css's --font-heading/
+// headings, Inter for body text -- see globals.css's --font-heading/
 // --font-body, which point at these variables.
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -20,11 +20,11 @@ const inter = Inter({
   display: 'swap',
 })
 
-// This layout sits above the [locale] segment and — verified directly, not
-// assumed — does not reliably receive the resolved locale via params here,
+// This layout sits above the [locale] segment and -- verified directly, not
+// assumed -- does not reliably receive the resolved locale via params here,
 // so title/description/lang stay a single static default rather than a
 // half-working per-locale attempt. (Title and description were previously
-// inconsistent: English title, French description — fixed to both English,
+// inconsistent: English title, French description -- fixed to both English,
 // matching the app's default locale.)
 export const metadata: Metadata = {
   title: 'SparqHub',

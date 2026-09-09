@@ -56,7 +56,7 @@ export default async function HomePage({ params }: HomePageProps) {
     <main className="flex flex-col">
       <PublicNavbar />
 
-      {/* Dark hero — same forest-900 as PublicNavbar itself (sticky,
+      {/* Dark hero -- same forest-900 as PublicNavbar itself (sticky,
           in-flow, always solid), so the two read as one continuous block
           instead of needing a scroll-triggered color match. */}
       <div className="bg-forest-900 px-6 pt-16 pb-24 text-center">
@@ -85,7 +85,7 @@ export default async function HomePage({ params }: HomePageProps) {
         </Link>
       </div>
 
-      {/* Light section below the hero — ChangelogMarquee's own colors
+      {/* Light section below the hero -- ChangelogMarquee's own colors
           (text-ink/gray-*) assume a light background. */}
       <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center px-6 py-16 bg-white">
         {changelogEntries.length > 0 ? (

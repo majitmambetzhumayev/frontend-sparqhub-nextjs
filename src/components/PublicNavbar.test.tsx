@@ -24,7 +24,7 @@ describe('PublicNavbar', () => {
 
       // jsdom doesn't evaluate the "hidden md:flex" media query, so the
       // always-rendered desktop link list is present in the DOM from the
-      // start — only the mobile panel itself is conditionally rendered.
+      // start -- only the mobile panel itself is conditionally rendered.
       // A second "Get started" link appearing is what proves the mobile
       // panel mounted, not just presence/absence of the text.
       expect(screen.getAllByRole('link', { name: 'Get started' })).toHaveLength(1);

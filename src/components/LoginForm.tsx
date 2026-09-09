@@ -10,7 +10,7 @@ import OAuthButtons from './OAuthButtons';
 
 type LoginFormProps = object;
 
-// OAuthCallbackAPIView redirects failures here as ?error=<code> — read once
+// OAuthCallbackAPIView redirects failures here as ?error=<code> -- read once
 // on mount rather than reactively, since the only way this param changes is
 // a fresh redirect (a full navigation, which remounts this component).
 const OAUTH_ERROR_KEYS: Record<string, string> = {
@@ -43,7 +43,7 @@ export default function LoginForm({}: LoginFormProps) {
         await login(username, password);
       } catch (err: unknown) {
         if (isAxiosError(err) && err.response?.status === 403) {
-          // Login is gated on email confirmation — surfaced distinctly
+          // Login is gated on email confirmation -- surfaced distinctly
           // from invalid-credentials so the user knows to check their inbox.
           setError(t('login.emailNotVerified'));
         } else if (

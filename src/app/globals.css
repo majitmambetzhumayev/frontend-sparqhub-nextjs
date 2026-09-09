@@ -6,7 +6,7 @@
   --color-user-msg: oklch(22% 0.06 155);
 
   /* Brand tokens, ported from the sparqup marketing site (same brand,
-     sparqup.fr) — "forest" (dark green) accent + "neutral" grayscale, both
+     sparqup.fr) -- "forest" (dark green) accent + "neutral" grayscale, both
      OKLCH. Introduced for the public landing page's hero/nav redesign;
      other components still use --color-ink/gray-* and don't need
      migrating just because these now exist. */

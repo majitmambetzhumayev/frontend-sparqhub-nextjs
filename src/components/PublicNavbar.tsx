@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-// Locale-aware Link — auto-prefixes the current locale onto these bare
+// Locale-aware Link -- auto-prefixes the current locale onto these bare
 // hrefs. Plain next/link here would navigate to unprefixed paths (e.g.
 // /dashboard instead of /en/dashboard), triggering an extra
 // middleware-driven redirect round-trip on every click.

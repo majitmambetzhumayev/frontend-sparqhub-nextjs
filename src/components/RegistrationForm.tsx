@@ -55,7 +55,7 @@ export default function RegistrationForm() {
         email: formData.email.trim(),
         password: formData.password,
       });
-      // Registration no longer auto-logs-in — the account is unverified
+      // Registration no longer auto-logs-in -- the account is unverified
       // until the confirmation link is clicked, so show a "check your
       // email" message instead of redirecting to login.
       setRegistered(true);
