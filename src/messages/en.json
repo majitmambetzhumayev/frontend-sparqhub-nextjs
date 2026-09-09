@@ -1,7 +1,21 @@
 {
   "home": {
     "title": "Yet another AI project",
-    "cta": "Get started"
+    "cta": "Get started",
+    "features": {
+      "chat": {
+        "title": "Multi-model chat",
+        "description": "Anthropic, OpenAI, Mistral, Gemini — switch models mid-conversation."
+      },
+      "agents": {
+        "title": "Agents & tools",
+        "description": "Connect your own MCP tools, with human approval before anything sensitive runs."
+      },
+      "context": {
+        "title": "Context & memory",
+        "description": "Uploads become searchable, and it remembers what matters across conversations."
+      }
+    }
   },
   "changelog": {
     "title": "Patch notes",
@@ -10,16 +24,12 @@
     "scrollDown": "Scroll down"
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact",
+    "getStarted": "Get started",
     "dashboard": "Dashboard",
     "conversations": "Conversations",
     "projects": "Projects",
     "settings": "Settings",
     "users": "Users",
-    "login": "Login",
-    "register": "Register",
     "logout": "Logout",
     "logoutError": "Could not log out. Please try again.",
     "openMenu": "Open menu",
@@ -202,10 +212,6 @@
     "providerLabel": "Provider",
     "modelLabel": "Model"
   },
-  "public": {
-    "aboutTitle": "About us",
-    "contactTitle": "Contact us"
-  },
   "auth": {
     "emailLabel": "Email",
     "forgotPasswordLink": "Forgot password?",
@@ -232,7 +238,16 @@
     },
     "register": {
       "checkEmailTitle": "Check your email",
-      "checkEmailMessage": "We've sent a confirmation link to your email address. Please click it to activate your account before logging in."
+      "checkEmailMessage": "We've sent a confirmation link to your email address. Please click it to activate your account before logging in.",
+      "title": "Register",
+      "confirmPasswordLabel": "Confirm Password",
+      "submit": "Register",
+      "submitting": "Registering…",
+      "passwordMismatch": "Passwords do not match.",
+      "missingFields": "Username, email and password are required.",
+      "genericError": "Registration failed. Please try again.",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Login here"
     },
     "confirmEmail": {
       "title": "Confirm your email",
@@ -245,7 +260,11 @@
     "login": {
       "emailNotVerified": "Please confirm your email address before logging in.",
       "noAccount": "Don't have an account?",
-      "registerLink": "Register here"
+      "registerLink": "Register here",
+      "title": "Login",
+      "submit": "Log In",
+      "submitting": "Logging in…",
+      "invalidCredentials": "Invalid username or password."
     },
     "oauth": {
       "orDivider": "or",
@@ -253,6 +272,8 @@
       "continueWithGithub": "Continue with GitHub",
       "errorFailed": "Sign-in was cancelled or failed. Please try again.",
       "errorNoEmail": "We couldn't get an email address from that provider. Please try a different sign-in method."
-    }
+    },
+    "usernameLabel": "Username",
+    "passwordLabel": "Password"
   }
 }

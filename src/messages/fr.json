@@ -1,7 +1,21 @@
 {
   "home": {
     "title": "Encore un projet IA",
-    "cta": "Commencer"
+    "cta": "Commencer",
+    "features": {
+      "chat": {
+        "title": "Chat multi-modèle",
+        "description": "Anthropic, OpenAI, Mistral, Gemini — change de modèle en pleine conversation."
+      },
+      "agents": {
+        "title": "Agents & outils",
+        "description": "Connecte tes propres outils MCP, avec validation humaine avant toute action sensible."
+      },
+      "context": {
+        "title": "Contexte & mémoire",
+        "description": "Tes documents deviennent cherchables, et il se souvient de ce qui compte entre les conversations."
+      }
+    }
   },
   "changelog": {
     "title": "Notes de version",
@@ -10,16 +24,12 @@
     "scrollDown": "Défiler vers le bas"
   },
   "nav": {
-    "home": "Accueil",
-    "about": "À propos",
-    "contact": "Contact",
+    "getStarted": "Démarrer",
     "dashboard": "Tableau de bord",
     "conversations": "Conversations",
     "projects": "Projets",
     "settings": "Paramètres",
     "users": "Utilisateurs",
-    "login": "Connexion",
-    "register": "Inscription",
     "logout": "Déconnexion",
     "logoutError": "Impossible de se déconnecter. Réessaie.",
     "openMenu": "Ouvrir le menu",
@@ -202,10 +212,6 @@
     "providerLabel": "Fournisseur",
     "modelLabel": "Modèle"
   },
-  "public": {
-    "aboutTitle": "À propos de nous",
-    "contactTitle": "Contactez-nous"
-  },
   "auth": {
     "emailLabel": "Email",
     "forgotPasswordLink": "Mot de passe oublié ?",
@@ -232,7 +238,16 @@
     },
     "register": {
       "checkEmailTitle": "Vérifiez votre email",
-      "checkEmailMessage": "Nous avons envoyé un lien de confirmation à votre adresse email. Cliquez dessus pour activer votre compte avant de vous connecter."
+      "checkEmailMessage": "Nous avons envoyé un lien de confirmation à votre adresse email. Cliquez dessus pour activer votre compte avant de vous connecter.",
+      "title": "Inscription",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "submit": "S'inscrire",
+      "submitting": "Inscription…",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "missingFields": "Le nom d'utilisateur, l'email et le mot de passe sont requis.",
+      "genericError": "L'inscription a échoué. Réessaie.",
+      "alreadyHaveAccount": "Déjà un compte ?",
+      "loginLink": "Connecte-toi ici"
     },
     "confirmEmail": {
       "title": "Confirmez votre email",
@@ -245,7 +260,11 @@
     "login": {
       "emailNotVerified": "Veuillez confirmer votre adresse email avant de vous connecter.",
       "noAccount": "Pas encore de compte ?",
-      "registerLink": "Inscris-toi ici"
+      "registerLink": "Inscris-toi ici",
+      "title": "Connexion",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "invalidCredentials": "Nom d'utilisateur ou mot de passe invalide."
     },
     "oauth": {
       "orDivider": "ou",
@@ -253,6 +272,8 @@
       "continueWithGithub": "Continuer avec GitHub",
       "errorFailed": "La connexion a été annulée ou a échoué. Réessayez.",
       "errorNoEmail": "Impossible de récupérer une adresse email depuis ce fournisseur. Essayez une autre méthode de connexion."
-    }
+    },
+    "usernameLabel": "Nom d'utilisateur",
+    "passwordLabel": "Mot de passe"
   }
 }
