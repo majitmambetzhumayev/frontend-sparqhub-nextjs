@@ -18,20 +18,20 @@ describe('PublicNavbar', () => {
       });
     });
 
-    it('opens the mobile menu on tap and adds a second copy of each link', async () => {
+    it('opens the mobile menu on tap and adds a second copy of the link', async () => {
       const user = userEvent.setup();
       render(<PublicNavbar />);
 
       // jsdom doesn't evaluate the "hidden md:flex" media query, so the
       // always-rendered desktop link list is present in the DOM from the
       // start — only the mobile panel itself is conditionally rendered.
-      // A second "Login" link appearing is what proves the mobile panel
-      // mounted, not just presence/absence of the text.
-      expect(screen.getAllByRole('link', { name: 'Login' })).toHaveLength(1);
+      // A second "Get started" link appearing is what proves the mobile
+      // panel mounted, not just presence/absence of the text.
+      expect(screen.getAllByRole('link', { name: 'Get started' })).toHaveLength(1);
 
       await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
-      expect(screen.getAllByRole('link', { name: 'Login' })).toHaveLength(2);
+      expect(screen.getAllByRole('link', { name: 'Get started' })).toHaveLength(2);
       expect(screen.getByRole('button', { name: 'Close menu' })).toBeInTheDocument();
     });
 
@@ -40,17 +40,17 @@ describe('PublicNavbar', () => {
       render(<PublicNavbar />);
 
       await user.click(screen.getByRole('button', { name: 'Open menu' }));
-      // The mobile panel's own "About" link, distinguishable by being the
-      // last one rendered (desktop list first, then the mobile panel).
-      const aboutLinks = screen.getAllByRole('link', { name: 'About' });
-      await user.click(aboutLinks[aboutLinks.length - 1]);
+      // The mobile panel's own copy, distinguishable by being the last one
+      // rendered (desktop list first, then the mobile panel).
+      const links = screen.getAllByRole('link', { name: 'Get started' });
+      await user.click(links[links.length - 1]);
 
       expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
     });
   });
 
   describe('logged in', () => {
-    it('shows a dashboard link and a logout button instead of login/register', async () => {
+    it('shows a dashboard link and a logout button instead of get started', async () => {
       vi.mocked(useAuth).mockReturnValue({
         user: { id: 1, username: 'alice', credits_remaining: 100, profile_picture: null, is_staff: false, has_seen_onboarding: true },
         status: 'authenticated',
@@ -65,7 +65,7 @@ describe('PublicNavbar', () => {
 
       expect(screen.getAllByRole('link', { name: 'Dashboard' }).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByRole('button', { name: 'Logout' }).length).toBeGreaterThanOrEqual(1);
-      expect(screen.queryByRole('link', { name: 'Login' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Get started' })).not.toBeInTheDocument();
     });
   });
 });
