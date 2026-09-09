@@ -7,6 +7,7 @@ import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import PublicNavbar from '@/components/PublicNavbar'
 import ChangelogMarquee from '@/components/ChangelogMarquee'
+import FeatureCard from '@/components/FeatureCard'
 import type { ChangelogEntry } from '@/types/changelog'
 
 // Order matches messages/*.json's home.features keys -- one icon per
@@ -65,16 +66,14 @@ export default async function HomePage({ params }: HomePageProps) {
         </h1>
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
-          {(Object.keys(FEATURE_ICONS) as Array<keyof typeof FEATURE_ICONS>).map((key) => {
-            const Icon = FEATURE_ICONS[key]
-            return (
-              <div key={key} className="p-5 bg-white/5 border border-white/10 rounded-2xl">
-                <Icon className="w-5 h-5 text-forest-400" />
-                <p className="mt-3 font-semibold text-neutral-50">{t(`features.${key}.title`)}</p>
-                <p className="mt-1 text-sm text-neutral-300">{t(`features.${key}.description`)}</p>
-              </div>
-            )
-          })}
+          {(Object.keys(FEATURE_ICONS) as Array<keyof typeof FEATURE_ICONS>).map((key) => (
+            <FeatureCard
+              key={key}
+              icon={FEATURE_ICONS[key]}
+              title={t(`features.${key}.title`)}
+              description={t(`features.${key}.description`)}
+            />
+          ))}
         </div>
 
         <Link
