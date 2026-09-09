@@ -17,5 +17,12 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|favicon.ico).*)'],
+  // Excludes anything with a file extension (e.g. /media/logos/x.svg,
+  // /favicon.ico), not just the previously hardcoded favicon.ico -- any
+  // other static asset under /public hit this middleware too and got a
+  // locale prefix redirect it can't actually resolve (confirmed: PublicNavbar's
+  // new logo <Image src="/media/logos/...svg"> 307'd to /en/media/logos/...,
+  // which isn't a real file). Nothing under /public was referenced by a
+  // literal path before, so this was a real but previously unexercised bug.
+  matcher: ['/((?!api|_next|.*\\..*).*)'],
 }
