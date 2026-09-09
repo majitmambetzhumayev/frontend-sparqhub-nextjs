@@ -2,11 +2,22 @@
 
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { MessagesSquare, Wrench, Brain } from 'lucide-react'
 import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import PublicNavbar from '@/components/PublicNavbar'
 import ChangelogMarquee from '@/components/ChangelogMarquee'
+import FeatureCard from '@/components/FeatureCard'
 import type { ChangelogEntry } from '@/types/changelog'
+
+// Order matches messages/*.json's home.features keys -- one icon per
+// theme (each card groups related shipped features, not a 1:1 feature
+// list), picked for what it actually does rather than decoration.
+const FEATURE_ICONS = {
+  chat: MessagesSquare,
+  agents: Wrench,
+  context: Brain,
+} as const
 
 interface HomePageProps {
   // params is now a Promise in Next.js 15+
@@ -41,20 +52,42 @@ export default async function HomePage({ params }: HomePageProps) {
   const t = await getTranslations({ locale, namespace: 'home' })
   const tChangelog = await getTranslations({ locale, namespace: 'changelog' })
   const changelogEntries = await getChangelogEntries()
+  const featureKeys = Object.keys(FEATURE_ICONS) as Array<keyof typeof FEATURE_ICONS>
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="flex flex-col">
       <PublicNavbar />
-      <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center px-6 py-10">
-        <div>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink">{t('title')}</h1>
-          <Link
-            href="/dashboard"
-            className="mt-10 inline-block px-6 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-sm font-medium"
-          >
-            {t('cta')}
-          </Link>
+
+      {/* Dark hero -- same forest-900 as PublicNavbar itself (sticky,
+          in-flow, always solid), so the two read as one continuous block
+          instead of needing a scroll-triggered color match. */}
+      <div className="bg-forest-900 px-6 pt-24 pb-24 text-center">
+        <h1 className="font-heading text-4xl sm:text-5xl tracking-tight text-neutral-50">
+          {t('title')}
+        </h1>
+
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
+          {featureKeys.map((key) => (
+            <FeatureCard
+              key={key}
+              icon={FEATURE_ICONS[key]}
+              title={t(`features.${key}.title`)}
+              description={t(`features.${key}.description`)}
+            />
+          ))}
         </div>
+
+        <Link
+          href="/dashboard"
+          className="mt-10 inline-block px-6 py-3 bg-forest-100 text-neutral-900 rounded-full hover:bg-white transition-colors text-sm font-medium"
+        >
+          {t('cta')}
+        </Link>
+      </div>
+
+      {/* Light section below the hero -- ChangelogMarquee's own colors
+          (text-ink/gray-*) assume a light background. */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center px-6 py-16 bg-white">
         {changelogEntries.length > 0 ? (
           <ChangelogMarquee entries={changelogEntries} locale={locale} />
         ) : (

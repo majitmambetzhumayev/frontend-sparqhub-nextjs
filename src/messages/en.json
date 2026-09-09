@@ -1,25 +1,35 @@
 {
   "home": {
     "title": "Yet another AI project",
-    "cta": "Get started"
+    "cta": "Get started",
+    "features": {
+      "chat": {
+        "title": "Multi-model chat",
+        "description": "Anthropic, OpenAI, Mistral, Gemini: switch models mid-conversation."
+      },
+      "agents": {
+        "title": "Agents & tools",
+        "description": "Connect your own MCP tools, with human approval before anything sensitive runs."
+      },
+      "context": {
+        "title": "Context & memory",
+        "description": "Uploads become searchable, and it remembers what matters across conversations."
+      }
+    }
   },
   "changelog": {
     "title": "Patch notes",
-    "comingSoon": "Patch notes — coming soon",
+    "comingSoon": "Patch notes (coming soon)",
     "scrollUp": "Scroll up",
     "scrollDown": "Scroll down"
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact",
+    "getStarted": "Get started",
     "dashboard": "Dashboard",
     "conversations": "Conversations",
     "projects": "Projects",
     "settings": "Settings",
     "users": "Users",
-    "login": "Login",
-    "register": "Register",
     "logout": "Logout",
     "logoutError": "Could not log out. Please try again.",
     "openMenu": "Open menu",
@@ -42,35 +52,35 @@
     "done": "Got it",
     "welcome": {
       "title": "Welcome to SparqHub",
-      "description": "A quick tour of what you can do here — takes less than a minute."
+      "description": "A quick tour of what you can do here, takes less than a minute."
     },
     "chat": {
       "title": "Chat with any provider",
-      "description": "Start a conversation with Claude, GPT, Mistral, or Gemini — and switch provider or model mid-conversation, not just when you create it."
+      "description": "Start a conversation with Claude, GPT, Mistral, or Gemini, and switch provider or model mid-conversation, not just when you create it."
     },
     "memory": {
       "title": "It remembers you, across conversations",
-      "description": "SparqHub automatically picks up on durable facts you share — preferences, ongoing projects, decisions — and brings the relevant ones into new conversations, so you don't have to repeat yourself. It won't remember everything, just what matters."
+      "description": "SparqHub automatically picks up on durable facts you share (preferences, ongoing projects, decisions) and brings the relevant ones into new conversations, so you don't have to repeat yourself. It won't remember everything, just what matters."
     },
     "images": {
       "title": "Image generation, built in",
-      "description": "Just ask — the AI can generate an image directly inside the conversation when it's useful, no separate tool needed."
+      "description": "Just ask: the AI can generate an image directly inside the conversation when it's useful, no separate tool needed."
     },
     "delegate": {
       "title": "The AI can hand off to another model",
-      "description": "Mid-conversation, the assistant can suggest switching to a different provider or model better suited to your question — always with your confirmation first."
+      "description": "Mid-conversation, the assistant can suggest switching to a different provider or model better suited to your question, always with your confirmation first."
     },
     "credits": {
       "title": "Free credits, or bring your own key",
-      "description": "You start with free credits on our shared key. Once they run out, add your own API key in Settings for unlimited use — no credit deductions, ever."
+      "description": "You start with free credits on our shared key. Once they run out, add your own API key in Settings for unlimited use, no credit deductions, ever."
     },
     "projects": {
       "title": "Group conversations into projects",
-      "description": "Keep related conversations together under a project — each project can also connect its own external tools."
+      "description": "Keep related conversations together under a project. Each project can also connect its own external tools."
     },
     "titles": {
       "title": "Titles, generated and renamable",
-      "description": "Every conversation gets a short AI-generated title after your first message — click it anytime to rename it yourself."
+      "description": "Every conversation gets a short AI-generated title after your first message. Click it anytime to rename it yourself."
     }
   },
   "topbar": {
@@ -175,7 +185,7 @@
     "apiKeys": "API Keys",
     "apiKeysDescription": "Bring your own API key for a provider to use it instead of the shared default.",
     "configured": "Configured",
-    "notConfigured": "Not configured — using shared default key",
+    "notConfigured": "Not configured (using shared default key)",
     "replaceKeyPlaceholder": "•••• replace key",
     "enterKeyPlaceholder": "Enter API key"
   },
@@ -201,10 +211,6 @@
     "instructionsLabel": "Instructions",
     "providerLabel": "Provider",
     "modelLabel": "Model"
-  },
-  "public": {
-    "aboutTitle": "About us",
-    "contactTitle": "Contact us"
   },
   "auth": {
     "emailLabel": "Email",
@@ -232,7 +238,16 @@
     },
     "register": {
       "checkEmailTitle": "Check your email",
-      "checkEmailMessage": "We've sent a confirmation link to your email address. Please click it to activate your account before logging in."
+      "checkEmailMessage": "We've sent a confirmation link to your email address. Please click it to activate your account before logging in.",
+      "title": "Register",
+      "confirmPasswordLabel": "Confirm Password",
+      "submit": "Register",
+      "submitting": "Registering…",
+      "passwordMismatch": "Passwords do not match.",
+      "missingFields": "Username, email and password are required.",
+      "genericError": "Registration failed. Please try again.",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Login here"
     },
     "confirmEmail": {
       "title": "Confirm your email",
@@ -245,7 +260,11 @@
     "login": {
       "emailNotVerified": "Please confirm your email address before logging in.",
       "noAccount": "Don't have an account?",
-      "registerLink": "Register here"
+      "registerLink": "Register here",
+      "title": "Login",
+      "submit": "Log In",
+      "submitting": "Logging in…",
+      "invalidCredentials": "Invalid username or password."
     },
     "oauth": {
       "orDivider": "or",
@@ -253,6 +272,8 @@
       "continueWithGithub": "Continue with GitHub",
       "errorFailed": "Sign-in was cancelled or failed. Please try again.",
       "errorNoEmail": "We couldn't get an email address from that provider. Please try a different sign-in method."
-    }
+    },
+    "usernameLabel": "Username",
+    "passwordLabel": "Password"
   }
 }

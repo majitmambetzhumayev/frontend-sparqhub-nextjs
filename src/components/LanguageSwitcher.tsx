@@ -39,7 +39,15 @@ const LOCALE_META: Record<Locale, { label: string; Flag: typeof FlagFR }> = {
   fr: { label: 'Français', Flag: FlagFR },
 };
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  // 'dark' is for placement over a dark background (e.g. PublicNavbar
+  // blended into the homepage's forest-900 hero) -- the dropdown panel
+  // itself stays light either way, only the trigger's resting text color
+  // needs to adapt to stay legible.
+  variant?: 'light' | 'dark';
+}
+
+export default function LanguageSwitcher({ variant = 'light' }: LanguageSwitcherProps) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const router = useRouter();
@@ -72,11 +80,15 @@ export default function LanguageSwitcher() {
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 px-2 py-1 rounded text-sm text-ink hover:bg-gray-100"
+        className={
+          variant === 'dark'
+            ? 'flex items-center gap-1.5 px-2 py-1 rounded text-sm text-neutral-100 hover:bg-white/10'
+            : 'flex items-center gap-1.5 px-2 py-1 rounded text-sm text-ink hover:bg-gray-100'
+        }
       >
         <Current className="w-5 h-3.5 rounded-[2px] object-cover shrink-0" />
         <span className="uppercase">{locale}</span>
-        <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+        <ChevronDown className={variant === 'dark' ? 'w-3.5 h-3.5 text-neutral-400' : 'w-3.5 h-3.5 text-gray-400'} />
       </button>
 
       {open && (

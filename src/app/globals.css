@@ -4,6 +4,36 @@
 @theme {
   --color-ink: #1f1f1f;
   --color-user-msg: oklch(22% 0.06 155);
+
+  /* Brand tokens, ported from the sparqup marketing site (same brand,
+     sparqup.fr) -- "forest" (dark green) accent + "neutral" grayscale, both
+     OKLCH. Introduced for the public landing page's hero/nav redesign;
+     other components still use --color-ink/gray-* and don't need
+     migrating just because these now exist. */
+  --color-forest-50: oklch(0.98 0.02 155);
+  --color-forest-100: oklch(0.94 0.05 155);
+  --color-forest-400: oklch(0.72 0.12 155);
+  --color-forest-500: oklch(0.65 0.15 155);
+  --color-forest-600: oklch(0.55 0.13 155);
+  --color-forest-700: oklch(0.45 0.12 155);
+  --color-forest-800: oklch(0.32 0.08 155);
+  --color-forest-900: oklch(0.22 0.06 155);
+  --color-forest-950: oklch(0.15 0.04 155);
+
+  --color-neutral-50: oklch(0.99 0 0);
+  --color-neutral-100: oklch(0.97 0 0);
+  --color-neutral-200: oklch(0.93 0 0);
+  --color-neutral-300: oklch(0.87 0 0);
+  --color-neutral-400: oklch(0.7 0 0);
+  --color-neutral-500: oklch(0.6 0 0);
+  --color-neutral-600: oklch(0.5 0 0);
+  --color-neutral-700: oklch(0.4 0 0);
+  --color-neutral-800: oklch(0.28 0 0);
+  --color-neutral-900: oklch(0.18 0 0);
+  --color-neutral-950: oklch(0.08 0 0);
+
+  --font-heading: var(--font-fraunces);
+  --font-body: var(--font-inter);
 }
 
 :root {

@@ -40,11 +40,11 @@ export default function RegistrationForm() {
     setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+      setError(tRegister('passwordMismatch'));
       return;
     }
     if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
-      setError('Username, email and password are required.');
+      setError(tRegister('missingFields'));
       return;
     }
 
@@ -55,7 +55,7 @@ export default function RegistrationForm() {
         email: formData.email.trim(),
         password: formData.password,
       });
-      // Registration no longer auto-logs-in — the account is unverified
+      // Registration no longer auto-logs-in -- the account is unverified
       // until the confirmation link is clicked, so show a "check your
       // email" message instead of redirecting to login.
       setRegistered(true);
@@ -67,7 +67,7 @@ export default function RegistrationForm() {
       ) {
         setError(err.response.data.email[0]);
       } else {
-        setError('Registration failed. Please try again.');
+        setError(tRegister('genericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -90,14 +90,14 @@ export default function RegistrationForm() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
+      <h1 className="text-2xl font-bold mb-4">{tRegister('title')}</h1>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="username" className="block mb-1 font-medium">
-            Username
+            {tAuth('usernameLabel')}
           </label>
           <input
             id="username"
@@ -129,7 +129,7 @@ export default function RegistrationForm() {
 
         <div>
           <label htmlFor="password" className="block mb-1 font-medium">
-            Password
+            {tAuth('passwordLabel')}
           </label>
           <input
             id="password"
@@ -145,7 +145,7 @@ export default function RegistrationForm() {
 
         <div>
           <label htmlFor="confirmPassword" className="block mb-1 font-medium">
-            Confirm Password
+            {tRegister('confirmPasswordLabel')}
           </label>
           <input
             id="confirmPassword"
@@ -165,17 +165,17 @@ export default function RegistrationForm() {
           className={`w-full py-2 rounded text-white transition ${
             isSubmitting
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700'
+              : 'bg-forest-900 hover:bg-forest-800'
           }`}
         >
-          {isSubmitting ? 'Registering…' : 'Register'}
+          {isSubmitting ? tRegister('submitting') : tRegister('submit')}
         </button>
       </form>
 
       <p className="mt-4 text-center">
-        Already have an account?{' '}
+        {tRegister('alreadyHaveAccount')}{' '}
         <Link href={`/${locale}/auth/login`} className="text-blue-500 hover:underline">
-          Login here
+          {tRegister('loginLink')}
         </Link>
       </p>
 

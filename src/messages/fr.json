@@ -1,25 +1,35 @@
 {
   "home": {
     "title": "Encore un projet IA",
-    "cta": "Commencer"
+    "cta": "Commencer",
+    "features": {
+      "chat": {
+        "title": "Chat multi-modèle",
+        "description": "Anthropic, OpenAI, Mistral, Gemini : change de modèle en pleine conversation."
+      },
+      "agents": {
+        "title": "Agents & outils",
+        "description": "Connecte tes propres outils MCP, avec validation humaine avant toute action sensible."
+      },
+      "context": {
+        "title": "Contexte & mémoire",
+        "description": "Tes documents deviennent cherchables, et il se souvient de ce qui compte entre les conversations."
+      }
+    }
   },
   "changelog": {
     "title": "Notes de version",
-    "comingSoon": "Notes de version — bientôt disponible",
+    "comingSoon": "Notes de version (bientôt disponible)",
     "scrollUp": "Défiler vers le haut",
     "scrollDown": "Défiler vers le bas"
   },
   "nav": {
-    "home": "Accueil",
-    "about": "À propos",
-    "contact": "Contact",
+    "getStarted": "Démarrer",
     "dashboard": "Tableau de bord",
     "conversations": "Conversations",
     "projects": "Projets",
     "settings": "Paramètres",
     "users": "Utilisateurs",
-    "login": "Connexion",
-    "register": "Inscription",
     "logout": "Déconnexion",
     "logoutError": "Impossible de se déconnecter. Réessaie.",
     "openMenu": "Ouvrir le menu",
@@ -42,35 +52,35 @@
     "done": "Compris",
     "welcome": {
       "title": "Bienvenue sur SparqHub",
-      "description": "Un tour rapide de ce que tu peux faire ici — moins d'une minute."
+      "description": "Un tour rapide de ce que tu peux faire ici, moins d'une minute."
     },
     "chat": {
       "title": "Discute avec n'importe quel provider",
-      "description": "Démarre une conversation avec Claude, GPT, Mistral ou Gemini — et change de provider ou de modèle en cours de route, pas seulement à la création."
+      "description": "Démarre une conversation avec Claude, GPT, Mistral ou Gemini, et change de provider ou de modèle en cours de route, pas seulement à la création."
     },
     "memory": {
       "title": "Il se souvient de toi, entre les conversations",
-      "description": "SparqHub retient automatiquement certains faits durables que tu partages — préférences, projets en cours, décisions — et les réutilise dans tes nouvelles conversations, pas besoin de te répéter. Il ne retient pas tout, juste ce qui compte."
+      "description": "SparqHub retient automatiquement certains faits durables que tu partages (préférences, projets en cours, décisions) et les réutilise dans tes nouvelles conversations, pas besoin de te répéter. Il ne retient pas tout, juste ce qui compte."
     },
     "images": {
       "title": "Génération d'images intégrée",
-      "description": "Demande simplement — l'IA peut générer une image directement dans la conversation quand c'est utile, pas besoin d'un outil séparé."
+      "description": "Demande simplement : l'IA peut générer une image directement dans la conversation quand c'est utile, pas besoin d'un outil séparé."
     },
     "delegate": {
       "title": "L'IA peut passer le relais à un autre modèle",
-      "description": "En cours de conversation, l'assistant peut proposer de basculer vers un autre provider ou modèle plus adapté à ta question — toujours avec ta confirmation avant."
+      "description": "En cours de conversation, l'assistant peut proposer de basculer vers un autre provider ou modèle plus adapté à ta question, toujours avec ta confirmation avant."
     },
     "credits": {
       "title": "Crédits offerts, ou ta propre clé",
-      "description": "Tu démarres avec des crédits offerts sur notre clé partagée. Une fois épuisés, ajoute ta propre clé API dans les Paramètres pour un usage illimité — plus aucune déduction de crédits."
+      "description": "Tu démarres avec des crédits offerts sur notre clé partagée. Une fois épuisés, ajoute ta propre clé API dans les Paramètres pour un usage illimité, plus aucune déduction de crédits."
     },
     "projects": {
       "title": "Regroupe tes conversations par projet",
-      "description": "Garde les conversations liées ensemble sous un projet — chaque projet peut aussi connecter ses propres outils externes."
+      "description": "Garde les conversations liées ensemble sous un projet. Chaque projet peut aussi connecter ses propres outils externes."
     },
     "titles": {
       "title": "Titres générés et renommables",
-      "description": "Chaque conversation reçoit un titre court généré par l'IA après ton premier message — clique dessus à tout moment pour le renommer toi-même."
+      "description": "Chaque conversation reçoit un titre court généré par l'IA après ton premier message. Clique dessus à tout moment pour le renommer toi-même."
     }
   },
   "topbar": {
@@ -175,7 +185,7 @@
     "apiKeys": "Clés API",
     "apiKeysDescription": "Utilisez votre propre clé API pour un fournisseur au lieu de la clé partagée par défaut.",
     "configured": "Configurée",
-    "notConfigured": "Non configurée — utilise la clé partagée par défaut",
+    "notConfigured": "Non configurée (utilise la clé partagée par défaut)",
     "replaceKeyPlaceholder": "•••• remplacer la clé",
     "enterKeyPlaceholder": "Entrez la clé API"
   },
@@ -201,10 +211,6 @@
     "instructionsLabel": "Instructions",
     "providerLabel": "Fournisseur",
     "modelLabel": "Modèle"
-  },
-  "public": {
-    "aboutTitle": "À propos de nous",
-    "contactTitle": "Contactez-nous"
   },
   "auth": {
     "emailLabel": "Email",
@@ -232,7 +238,16 @@
     },
     "register": {
       "checkEmailTitle": "Vérifiez votre email",
-      "checkEmailMessage": "Nous avons envoyé un lien de confirmation à votre adresse email. Cliquez dessus pour activer votre compte avant de vous connecter."
+      "checkEmailMessage": "Nous avons envoyé un lien de confirmation à votre adresse email. Cliquez dessus pour activer votre compte avant de vous connecter.",
+      "title": "Inscription",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "submit": "S'inscrire",
+      "submitting": "Inscription…",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "missingFields": "Le nom d'utilisateur, l'email et le mot de passe sont requis.",
+      "genericError": "L'inscription a échoué. Réessaie.",
+      "alreadyHaveAccount": "Déjà un compte ?",
+      "loginLink": "Connecte-toi ici"
     },
     "confirmEmail": {
       "title": "Confirmez votre email",
@@ -245,7 +260,11 @@
     "login": {
       "emailNotVerified": "Veuillez confirmer votre adresse email avant de vous connecter.",
       "noAccount": "Pas encore de compte ?",
-      "registerLink": "Inscris-toi ici"
+      "registerLink": "Inscris-toi ici",
+      "title": "Connexion",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "invalidCredentials": "Nom d'utilisateur ou mot de passe invalide."
     },
     "oauth": {
       "orDivider": "ou",
@@ -253,6 +272,8 @@
       "continueWithGithub": "Continuer avec GitHub",
       "errorFailed": "La connexion a été annulée ou a échoué. Réessayez.",
       "errorNoEmail": "Impossible de récupérer une adresse email depuis ce fournisseur. Essayez une autre méthode de connexion."
-    }
+    },
+    "usernameLabel": "Nom d'utilisateur",
+    "passwordLabel": "Mot de passe"
   }
 }
