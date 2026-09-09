@@ -52,6 +52,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const t = await getTranslations({ locale, namespace: 'home' })
   const tChangelog = await getTranslations({ locale, namespace: 'changelog' })
   const changelogEntries = await getChangelogEntries()
+  const featureKeys = Object.keys(FEATURE_ICONS) as Array<keyof typeof FEATURE_ICONS>
 
   return (
     <main className="flex flex-col">
@@ -60,13 +61,13 @@ export default async function HomePage({ params }: HomePageProps) {
       {/* Dark hero -- same forest-900 as PublicNavbar itself (sticky,
           in-flow, always solid), so the two read as one continuous block
           instead of needing a scroll-triggered color match. */}
-      <div className="bg-forest-900 px-6 pt-16 pb-24 text-center">
+      <div className="bg-forest-900 px-6 pt-24 pb-24 text-center">
         <h1 className="font-heading text-4xl sm:text-5xl tracking-tight text-neutral-50">
           {t('title')}
         </h1>
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
-          {(Object.keys(FEATURE_ICONS) as Array<keyof typeof FEATURE_ICONS>).map((key) => (
+          {featureKeys.map((key) => (
             <FeatureCard
               key={key}
               icon={FEATURE_ICONS[key]}
