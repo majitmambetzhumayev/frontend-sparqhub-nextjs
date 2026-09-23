@@ -71,6 +71,10 @@
       "title": "L'IA peut passer le relais à un autre modèle",
       "description": "En cours de conversation, l'assistant peut proposer de basculer vers un autre provider ou modèle plus adapté à ta question, toujours avec ta confirmation avant."
     },
+    "agents": {
+      "title": "Tes propres agents spécialisés (première ébauche)",
+      "description": "Donne un rôle à un assistant (ex : \"comptabilité\") dans la page Assistants, et les autres peuvent lui déléguer automatiquement quand c'est pertinent, toujours avec ta confirmation avant. C'est une première version, il peut rester des aspérités."
+    },
     "credits": {
       "title": "Crédits offerts, ou ta propre clé",
       "description": "Tu démarres avec des crédits offerts sur notre clé partagée. Une fois épuisés, ajoute ta propre clé API dans les Paramètres pour un usage illimité, plus aucune déduction de crédits."

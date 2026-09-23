@@ -11,8 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 // user.has_seen_onboarding (backend field, not localStorage, so it
 // survives a different browser/device). Every step is anchored on the
 // dashboard itself; features with no dashboard element (memory, image
-// generation, delegate_to_model) get a popover-only step instead of
-// navigating the user to another page mid-tour.
+// generation, delegate_to_model, delegate_to_agent) get a popover-only
+// step instead of navigating the user to another page mid-tour.
 export function useOnboardingTour() {
   const { user, refreshUser } = useAuth();
   const t = useTranslations('onboarding');
@@ -39,6 +39,7 @@ export function useOnboardingTour() {
         { popover: { title: t('memory.title'), description: t('memory.description') } },
         { popover: { title: t('images.title'), description: t('images.description') } },
         { popover: { title: t('delegate.title'), description: t('delegate.description') } },
+        { popover: { title: t('agents.title'), description: t('agents.description') } },
         {
           element: '[data-tour="usage-widget"]',
           popover: { title: t('credits.title'), description: t('credits.description') },

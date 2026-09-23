@@ -71,6 +71,10 @@
       "title": "The AI can hand off to another model",
       "description": "Mid-conversation, the assistant can suggest switching to a different provider or model better suited to your question, always with your confirmation first."
     },
+    "agents": {
+      "title": "Your own specialized agents (early preview)",
+      "description": "Give an assistant a role (e.g. \"accounting\") on the Assistants page, and others can delegate to it automatically when it fits, always with your confirmation first. This is a first version, expect rough edges."
+    },
     "credits": {
       "title": "Free credits, or bring your own key",
       "description": "You start with free credits on our shared key. Once they run out, add your own API key in Settings for unlimited use, no credit deductions, ever."
