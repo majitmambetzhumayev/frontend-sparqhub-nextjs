@@ -5,6 +5,7 @@ export interface Assistant {
   name: string;
   instructions?: string;
   model: string;
+  role?: string;
   metadata: Record<string, unknown>;
   ai_provider: string;
   deleted: boolean;

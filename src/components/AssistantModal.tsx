@@ -19,6 +19,7 @@ export interface AssistantModalProps {
     instructions: string;
     model: string;
     ai_provider: string;
+    role: string;
   }) => void;
   onClose: () => void;
 }
@@ -35,6 +36,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
   const tCommon = useTranslations('common');
   const [name, setName] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
+  const [role, setRole] = useState<string>('');
   const [aiProvider, setAiProvider] = useState<string>('');
   const [model, setModel] = useState<string>('');
 
@@ -53,9 +55,11 @@ const AssistantModal: FC<AssistantModalProps> = ({
     if (assistant) {
       setName(assistant.name);
       setInstructions(assistant.instructions ?? '');
+      setRole(assistant.role ?? '');
     } else {
       setName('');
       setInstructions('');
+      setRole('');
     }
   }, [assistant, isOpen]);
 
@@ -113,6 +117,17 @@ const AssistantModal: FC<AssistantModalProps> = ({
         </div>
 
         <div>
+          <label className="block mb-1 font-medium">{t('roleLabel')}</label>
+          <input
+            type="text"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            disabled={isSubmitting}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+
+        <div>
           <label className="block mb-1 font-medium">{t('providerLabel')}</label>
           <select
             value={aiProvider}
@@ -164,6 +179,7 @@ const AssistantModal: FC<AssistantModalProps> = ({
               instructions: instructions.trim(),
               model,
               ai_provider: aiProvider,
+              role: role.trim(),
             })
           }
           disabled={isSubmitting || !name.trim() || !model || !aiProvider}

@@ -10,6 +10,12 @@ export interface PendingConfirmation {
   tool: string;
   arguments: Record<string, unknown>;
   threadId: number;
+  // Which MCP server owns this tool call ("built-in" for the app's own
+  // tools) and whether search_project_files already ran earlier in this
+  // turn — both let the confirmation card show a user enough to judge what
+  // they're actually approving, not just a raw tool name.
+  source: string;
+  afterFileRead: boolean;
 }
 
 // thread_id rides on every broadcast frame (chunk/status/error) so a
@@ -49,6 +55,8 @@ interface ConfirmRequiredStatusFrame {
   status: 'confirm_required';
   tool: string;
   arguments: Record<string, unknown>;
+  source: string;
+  after_file_read: boolean;
   thread_id: number;
   user_text?: string;
   streamed_text?: string;
@@ -170,7 +178,13 @@ function reducer(state: SocketState, action: Action): SocketState {
           ...state,
           status: 'confirm_required',
           activeTool: frame.tool,
-          pendingConfirmation: { tool: frame.tool, arguments: frame.arguments, threadId: frame.thread_id },
+          pendingConfirmation: {
+            tool: frame.tool,
+            arguments: frame.arguments,
+            threadId: frame.thread_id,
+            source: frame.source,
+            afterFileRead: frame.after_file_read,
+          },
           delegatingProvider: null,
           // Authoritative catch-up from the server — always safe to
           // overwrite (never a duplicate-append concern like the parent's

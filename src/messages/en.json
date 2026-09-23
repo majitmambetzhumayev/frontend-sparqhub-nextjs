@@ -28,6 +28,7 @@
     "dashboard": "Dashboard",
     "conversations": "Conversations",
     "projects": "Projects",
+    "assistantManager": "Assistants",
     "settings": "Settings",
     "users": "Users",
     "logout": "Logout",
@@ -69,6 +70,10 @@
     "delegate": {
       "title": "The AI can hand off to another model",
       "description": "Mid-conversation, the assistant can suggest switching to a different provider or model better suited to your question, always with your confirmation first."
+    },
+    "agents": {
+      "title": "Your own specialized agents (early preview)",
+      "description": "Give an assistant a role (e.g. \"accounting\") on the Assistants page, and others can delegate to it automatically when it fits, always with your confirmation first. This is a first version, expect rough edges."
     },
     "credits": {
       "title": "Free credits, or bring your own key",
@@ -129,6 +134,8 @@
     "fallbackTitle": "Conversation",
     "delegateToModel": "Delegate to another model",
     "wantsToUse": "Wants to use: {title}",
+    "viaServer": "via MCP server \"{server}\"",
+    "afterFileReadWarning": "This may have been shaped by content read from an uploaded file this turn — review carefully before confirming.",
     "connectionFailed": "Could not connect to the chat.",
     "connectionLost": "Lost connection to the chat."
   },
@@ -209,6 +216,7 @@
     "error": "Error: {message}",
     "nameLabel": "Name",
     "instructionsLabel": "Instructions",
+    "roleLabel": "Role (optional — used for multi-agent delegation)",
     "providerLabel": "Provider",
     "modelLabel": "Model"
   },

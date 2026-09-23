@@ -15,6 +15,7 @@ const navItems = [
   { key: 'dashboard', href: '/dashboard' },
   { key: 'conversations', href: '/conversations' },
   { key: 'projects', href: '/projects' },
+  { key: 'assistantManager', href: '/assistant-manager' },
 ] as const;
 
 const adminNavItems = [
@@ -47,7 +48,7 @@ function SidebarContent({ items, pathname, t, onNavigate, showCredits }: Sidebar
               pathname === item.href ? 'bg-gray-100 font-semibold' : ''
             }`}
           >
-            {t(item.key as 'dashboard' | 'conversations' | 'projects' | 'users')}
+            {t(item.key as 'dashboard' | 'conversations' | 'projects' | 'assistantManager' | 'users')}
           </Link>
         ))}
       </nav>

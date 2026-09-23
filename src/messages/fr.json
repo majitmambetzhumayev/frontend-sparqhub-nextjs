@@ -28,6 +28,7 @@
     "dashboard": "Tableau de bord",
     "conversations": "Conversations",
     "projects": "Projets",
+    "assistantManager": "Assistants",
     "settings": "Paramètres",
     "users": "Utilisateurs",
     "logout": "Déconnexion",
@@ -69,6 +70,10 @@
     "delegate": {
       "title": "L'IA peut passer le relais à un autre modèle",
       "description": "En cours de conversation, l'assistant peut proposer de basculer vers un autre provider ou modèle plus adapté à ta question, toujours avec ta confirmation avant."
+    },
+    "agents": {
+      "title": "Tes propres agents spécialisés (première ébauche)",
+      "description": "Donne un rôle à un assistant (ex : \"comptabilité\") dans la page Assistants, et les autres peuvent lui déléguer automatiquement quand c'est pertinent, toujours avec ta confirmation avant. C'est une première version, il peut rester des aspérités."
     },
     "credits": {
       "title": "Crédits offerts, ou ta propre clé",
@@ -129,6 +134,8 @@
     "fallbackTitle": "Conversation",
     "delegateToModel": "Déléguer à un autre modèle",
     "wantsToUse": "Souhaite utiliser : {title}",
+    "viaServer": "via le serveur MCP « {server} »",
+    "afterFileReadWarning": "Cet appel a peut-être été influencé par le contenu d'un fichier lu ce tour-ci — vérifiez attentivement avant de confirmer.",
     "connectionFailed": "Impossible de se connecter au chat.",
     "connectionLost": "Connexion au chat perdue."
   },
@@ -209,6 +216,7 @@
     "error": "Erreur : {message}",
     "nameLabel": "Nom",
     "instructionsLabel": "Instructions",
+    "roleLabel": "Rôle (optionnel — utilisé pour la délégation multi-agents)",
     "providerLabel": "Fournisseur",
     "modelLabel": "Modèle"
   },

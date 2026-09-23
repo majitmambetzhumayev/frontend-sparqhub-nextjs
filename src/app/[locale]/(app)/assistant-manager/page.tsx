@@ -92,6 +92,7 @@ export default function AssistantManagerPage() {
     instructions: string;
     model: string;
     ai_provider: string;
+    role: string;
   }) => upsert(data);
 
   const handleDelete = (id: number) => {
