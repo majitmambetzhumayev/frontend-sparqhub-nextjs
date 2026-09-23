@@ -63,7 +63,10 @@ describe('ChatWindow', () => {
       <ChatWindow
         messages={[]}
         status="confirm_required"
-        pendingConfirmation={{ tool: 'delegate_to_model', arguments: { provider: 'gemini' }, threadId: 1 }}
+        pendingConfirmation={{
+          tool: 'delegate_to_model', arguments: { provider: 'gemini' }, threadId: 1,
+          source: 'built-in', afterFileRead: false,
+        }}
         onConfirmTool={onConfirmTool}
         onCancelTool={onCancelTool}
       />,

@@ -129,6 +129,8 @@
     "fallbackTitle": "Conversation",
     "delegateToModel": "Déléguer à un autre modèle",
     "wantsToUse": "Souhaite utiliser : {title}",
+    "viaServer": "via le serveur MCP « {server} »",
+    "afterFileReadWarning": "Cet appel a peut-être été influencé par le contenu d'un fichier lu ce tour-ci — vérifiez attentivement avant de confirmer.",
     "connectionFailed": "Impossible de se connecter au chat.",
     "connectionLost": "Connexion au chat perdue."
   },

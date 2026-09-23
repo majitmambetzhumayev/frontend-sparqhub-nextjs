@@ -129,6 +129,8 @@
     "fallbackTitle": "Conversation",
     "delegateToModel": "Delegate to another model",
     "wantsToUse": "Wants to use: {title}",
+    "viaServer": "via MCP server \"{server}\"",
+    "afterFileReadWarning": "This may have been shaped by content read from an uploaded file this turn — review carefully before confirming.",
     "connectionFailed": "Could not connect to the chat.",
     "connectionLost": "Lost connection to the chat."
   },

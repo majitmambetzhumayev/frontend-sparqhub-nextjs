@@ -22,7 +22,17 @@ const ToolConfirmationCard: FC<ToolConfirmationCardProps> = ({ confirmation, onC
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 max-w-3xl mx-auto space-y-3">
-      <p className="text-sm font-semibold text-ink">{t('wantsToUse', { title })}</p>
+      <div>
+        <p className="text-sm font-semibold text-ink">{t('wantsToUse', { title })}</p>
+        {confirmation.source !== 'built-in' && (
+          <p className="text-xs text-gray-500">{t('viaServer', { server: confirmation.source })}</p>
+        )}
+      </div>
+      {confirmation.afterFileRead && (
+        <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+          {t('afterFileReadWarning')}
+        </p>
+      )}
       <dl className="text-sm space-y-1">
         {Object.entries(confirmation.arguments).map(([key, value]) => (
           <div key={key} className="flex gap-2">
