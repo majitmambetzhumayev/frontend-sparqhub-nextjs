@@ -211,6 +211,7 @@
     "error": "Erreur : {message}",
     "nameLabel": "Nom",
     "instructionsLabel": "Instructions",
+    "roleLabel": "Rôle (optionnel — utilisé pour la délégation multi-agents)",
     "providerLabel": "Fournisseur",
     "modelLabel": "Modèle"
   },
