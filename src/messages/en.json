@@ -28,6 +28,7 @@
     "dashboard": "Dashboard",
     "conversations": "Conversations",
     "projects": "Projects",
+    "assistantManager": "Assistants",
     "settings": "Settings",
     "users": "Users",
     "logout": "Logout",
